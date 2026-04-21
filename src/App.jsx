@@ -1,120 +1,113 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import heroVideo from './assets/hero-video.mp4'
+import gglLogo from './assets/GGL_LOGO.png'
+import PillNav from './PillNav'
+import SplitText from './SplitText'
 import './App.css'
+import ShinyText from './ShinyText'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+    <div>
+      {/* BANNER SECTION */}
+      <section id="home" style={{ position: 'relative', height: '35vh', overflow: 'hidden', backgroundColor: '#0a1628' }}>
+
+        {/* PillNav */}
+        <PillNav
+          logo={gglLogo}
+          logoAlt="GGL Logo"
+          items={[
+            { label: 'Tournament', href: '#tournament' },
+            { label: 'Prizes', href: '#prizes' },
+            { label: 'Join', href: '#join' },
+          ]}
+          activeHref="#home"
+          baseColor="#111111"
+          pillColor="#222222"
+          pillTextColor="#ffffff"
+          hoveredPillTextColor="#e4ba4f"
+          initialLoadAnimation={true}
+        />
+
+        {/* Video Background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            minWidth: '100%',
+            minHeight: '100%',
+            objectFit: 'cover',
+            opacity: 0.4,
+          }}
         >
-          Count is {count}
-        </button>
-      </section>
+          <source src={heroVideo} type="video/mp4" />
+        </video>
 
-      <div className="ticks"></div>
+        {/* Dark overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to bottom, rgba(10,22,40,0.3) 0%, rgba(10,22,40,0.7) 100%)'
+        }} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+        {/* Content */}
+        <div style={{
+          position: 'relative',
+          zIndex: 10,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '0 20px',
+        }}>
+<h1 style={{
+            fontFamily: 'Orbitron, sans-serif',
+            fontSize: 'clamp(3rem, 10vw, 8rem)',
+            fontWeight: 900,
+            letterSpacing: '0.15em',
+            margin: 0,
+            textShadow: '0 0 40px rgba(213,175,76,0.4)',
+          }}>
+            <ShinyText
+              text="GGL"
+              color="#d5af4c"
+              shineColor="#fff8dc"
+              speed={3}
+              spread={120}
+              direction="left"
+            />
+          </h1>
+          <SplitText
+            text="Feel Like A Pro"
+            tag="p"
+            delay={80}
+            duration={0.8}
+            ease="power3.out"
+            from={{ opacity: 0, y: 30 }}
+            to={{ opacity: 1, y: 0 }}
+            textAlign="center"
+            className=""
+            style={{
+              fontFamily: 'Orbitron, sans-serif',
+              fontSize: 'clamp(0.8rem, 2.5vw, 1.4rem)',
+              fontWeight: 400,
+              color: '#ffffff',
+              letterSpacing: '0.4em',
+              marginTop: '1rem',
+              textTransform: 'uppercase',
+            }}
+          />
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      </section>
+    </div>
   )
 }
 
