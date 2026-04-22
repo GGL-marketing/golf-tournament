@@ -1,3 +1,17 @@
+@font-face {
+  font-family: 'The Foriene Serif';
+  src: url('./assets/The_Foriene_Serif_Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'The Foriene Serif';
+  src: url('./assets/The_Foriene_Serif_Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,4 +20,5 @@
 
 body {
   overflow-x: hidden;
+  background-color: #0f132a;
 }
