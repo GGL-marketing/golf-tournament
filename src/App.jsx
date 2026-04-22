@@ -1,9 +1,12 @@
 import heroVideo from './assets/hero-video.mp4'
 import gglLogo from './assets/GGL_LOGO.png'
+import prizesImage from './assets/plain_image.webp'
+import holeInOneImage from './assets/hole_in_1.webp'
 import PillNav from './PillNav'
 import SplitText from './SplitText'
 import ShinyText from './ShinyText'
 import CircleAnnotation from './CircleAnnotation'
+import MagicBento from './MagicBento'
 import './App.css'
 
 function App() {
@@ -74,7 +77,7 @@ function App() {
             fontWeight: 900,
             letterSpacing: '0.15em',
             margin: 0,
-              marginTop: '8rem',
+            marginTop: '8rem',
             textShadow: '0 0 40px rgba(213,175,76,0.4)',
           }}>
             <ShinyText
@@ -116,36 +119,36 @@ function App() {
         padding: '0',
       }}>
 
-{/* Date Bar */}
-<div style={{
-  borderTop: '1px solid #d5af4c',
-  borderBottom: '1px solid #d5af4c',
-  padding: '16px 40px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: '16px',
-}}>
-  <p style={{
-    fontFamily: "'The Foriene Serif', serif",
-    fontStyle: 'italic',
-    fontSize: 'clamp(1.2rem, 3vw, 2rem)',
-    color: '#ffffff',
-    margin: 0,
-  }}>
-    Next Tournament: 17–18 December 2026
-  </p>
-  <span style={{ color: '#d5af4c', fontSize: '1.5rem' }}>•</span>
-  <p style={{
-    fontFamily: "'The Foriene Serif', serif",
-    fontStyle: 'italic',
-    fontSize: 'clamp(1.2rem, 3vw, 2rem)',
-    color: '#ffffff',
-    margin: 0,
-  }}>
-    Hosted at Rondebosch Golf Club
-  </p>
-</div>
+        {/* Date Bar */}
+        <div style={{
+          borderTop: '1px solid #d5af4c',
+          borderBottom: '1px solid #d5af4c',
+          padding: '16px 40px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '16px',
+        }}>
+          <p style={{
+            fontFamily: "'The Foriene Serif', serif",
+            fontStyle: 'italic',
+            fontSize: 'clamp(1.2rem, 3vw, 2rem)',
+            color: '#ffffff',
+            margin: 0,
+          }}>
+            Next Tournament: 17–18 December 2026
+          </p>
+          <span style={{ color: '#d5af4c', fontSize: '1.5rem' }}>•</span>
+          <p style={{
+            fontFamily: "'The Foriene Serif', serif",
+            fontStyle: 'italic',
+            fontSize: 'clamp(1.2rem, 3vw, 2rem)',
+            color: '#ffffff',
+            margin: 0,
+          }}>
+            Hosted at Rondebosch Golf Club
+          </p>
+        </div>
 
         {/* Main Content */}
         <div style={{
@@ -190,7 +193,6 @@ function App() {
             display: 'inline-block',
           }}>
             Your Season<br />Starts Now.
-            {/* Amazing Prizes bubble */}
             <span style={{
               position: 'absolute',
               right: '-300px',
@@ -222,6 +224,222 @@ function App() {
           </a>
 
         </div>
+      </section>
+
+      {/* PRIZES SECTION */}
+      <section id="prizes" style={{
+        position: 'relative',
+        overflow: 'hidden',
+        backgroundColor: '#0f132a',
+        minHeight: '600px',
+      }}>
+
+        {/* Background image */}
+        <img
+          src={prizesImage}
+          alt="Golf course"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'right center',
+            opacity: 1,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Left-to-right gradient */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to right, rgba(15,19,42,0.98) 0%, rgba(15,19,42,0.92) 35%, rgba(15,19,42,0.5) 60%, rgba(15,19,42,0.15) 100%)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Top & bottom navy fade */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to bottom, #0f132a 0%, transparent 8%, transparent 92%, #0f132a 100%)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Content */}
+        <div style={{
+          position: 'relative',
+          zIndex: 10,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '100px 10px 80px 300px',
+          width: '55%',
+        }}>
+
+          {/* PRIZES badge */}
+          <div style={{
+            display: 'inline-block',
+            border: '2px solid #d5af4c',
+            borderRadius: '50px',
+            padding: '10px 40px',
+            marginBottom: '48px',
+          }}>
+            <span style={{
+              fontFamily: 'Orbitron, sans-serif',
+              fontSize: 'clamp(1.2rem, 3vw, 2rem)',
+              fontWeight: 900,
+              color: '#ffffff',
+              letterSpacing: '0.3em',
+            }}>
+              PRIZES
+            </span>
+          </div>
+
+          {/* MagicBento cards */}
+          <MagicBento
+            textAutoHide={false}
+            enableStars={true}
+            enableSpotlight={true}
+            enableBorderGlow={true}
+            enableTilt={true}
+            enableMagnetism={true}
+            clickEffect={true}
+            spotlightRadius={200}
+            particleCount={10}
+            glowColor="213, 175, 76"
+          />
+
+          {/* Bonus note */}
+          <p style={{
+            fontFamily: "'The Foriene Serif', serif",
+            fontStyle: 'italic',
+            fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+            color: '#ffffff',
+            marginTop: '40px',
+            opacity: 0.9,
+            textAlign: 'center',
+            letterSpacing: '0.05em',
+          }}>
+            Top 10 players are awarded 50% off their next tournament entry
+          </p>
+
+        </div>
+      </section>
+
+      {/* HOLE IN ONE SECTION */}
+      <section style={{
+        position: 'relative',
+        overflow: 'hidden',
+        backgroundColor: '#0f132a',
+        height: '900px',
+      }}>
+
+        {/* Background image */}
+        <img
+          src={holeInOneImage}
+          alt="Hole in one"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center center',
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Top navy fade */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '120px',
+          background: 'linear-gradient(to bottom, #0f132a 0%, transparent 100%)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Bottom navy fade */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '120px',
+          background: 'linear-gradient(to top, #0f132a 0%, transparent 100%)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Text overlay — centre left, vertically centred */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '8%',
+          transform: 'translateY(-50%)',
+          zIndex: 10,
+        }}>
+          <div style={{
+            backgroundColor: 'rgba(15, 19, 42, 0.85)',
+            border: '2px solid #d5af4c',
+            borderRadius: '12px',
+            padding: '16px 28px',
+            display: 'inline-block',
+            marginBottom: '12px',
+          }}>
+            <span style={{
+              fontFamily: 'Orbitron, sans-serif',
+              fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
+              fontWeight: 900,
+              color: '#ffffff',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+            }}>
+              2 Million Rand
+            </span>
+          </div>
+          <div style={{ paddingLeft: '8px' }}>
+            <span style={{
+              fontFamily: "'The Foriene Serif', serif",
+              fontStyle: 'italic',
+              fontSize: 'clamp(1.8rem, 4vw, 3.2rem)',
+              color: '#ffffff',
+              letterSpacing: '0.02em',
+            }}>
+              hole-in-1
+            </span>
+          </div>
+        </div>
+
+        {/* Bottom navy bar */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: 'rgba(15, 19, 42, 0.92)',
+          borderTop: '1px solid #d5af4c',
+          borderBottom: '1px solid #d5af4c',
+          padding: '18px 40px',
+          textAlign: 'center',
+          zIndex: 10,
+        }}>
+          <p style={{
+            fontFamily: 'Orbitron, sans-serif',
+            fontSize: 'clamp(0.7rem, 1.2vw, 1rem)',
+            fontWeight: 600,
+            color: '#ffffff',
+            letterSpacing: '0.2em',
+            margin: 0,
+            textTransform: 'uppercase',
+          }}>
+            Two chances at 2 Million Rand. Hole in one, Par 4. T's and C's apply.
+          </p>
+        </div>
+
       </section>
 
     </div>
