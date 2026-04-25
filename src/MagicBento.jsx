@@ -338,7 +338,7 @@ const prizeCardData = [
     division: 'Division 2',
     handicap: 'Handicap 10 – 17',
     prizes: [
-      { place: '1st', amount: 'R35K' },
+      { place: '1st', amount: 'R30K' },
       { place: '2nd', amount: 'R15K' },
       { place: '3rd', amount: 'R7K' },
     ]
@@ -348,7 +348,7 @@ const prizeCardData = [
     division: 'Division 3',
     handicap: 'Handicap 18 – 27',
     prizes: [
-      { place: '1st', amount: 'R25K' },
+      { place: '1st', amount: 'R20K' },
       { place: '2nd', amount: 'R10K' },
       { place: '3rd', amount: 'R5K' },
     ]

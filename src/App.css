@@ -37,6 +37,9 @@
   font-size: 1.1rem;
   letter-spacing: 0.15em;
 }
+.enter-btn::before {
+  content: "ENTER NOW";
+}
 
 .claim-btn:hover {
   background-position: right;
