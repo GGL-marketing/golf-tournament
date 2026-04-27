@@ -48,6 +48,74 @@ const divisions = [
   },
 ]
 
+const faqItems = [
+  {
+    question: 'What is the entry fee?',
+    answer: 'The entry fee is as follows per division; Division 1: R3000, Division 2: R2000, Division 3: R1000'
+  },
+  {
+    question: 'How many balls per division?',
+    answer: '17 Three-Balls per division.'
+  },
+  {
+    question: 'How many players in total?',
+    answer: 'There are spots available for 153 players at the tournament.'
+  },
+]
+
+function FlipCard({ question, answer }) {
+  const [flipped, setFlipped] = useState(false)
+  return (
+    <div onClick={() => setFlipped(!flipped)} style={{ width: '100%', height: '160px', perspective: '1000px', cursor: 'pointer' }}>
+      <div style={{
+        width: '100%', height: '100%', position: 'relative',
+        transformStyle: 'preserve-3d',
+        transition: 'transform 0.6s',
+        transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+      }}>
+        {/* Front */}
+        <div style={{
+          position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
+          backgroundColor: 'rgba(15,19,42,0.9)', border: '1px solid rgba(213,175,76,0.4)',
+          borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+        }}>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'center', margin: 0 }}>{question}</p>
+        </div>
+        {/* Back */}
+        <div style={{
+          position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
+          backgroundColor: 'rgba(213,175,76,0.1)', border: '1px solid #d5af4c',
+          borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+          transform: 'rotateY(180deg)'
+        }}>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)', fontWeight: 400, color: 'rgba(255,255,255,0.9)', textAlign: 'center', margin: 0, lineHeight: 1.6, letterSpacing: '0.05em' }}>{answer}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FlipPostcard({ front, back }) {
+  const [flipped, setFlipped] = useState(false)
+  return (
+    <div onClick={() => setFlipped(!flipped)} style={{ width: '80%', maxWidth: '340px', aspectRatio: '3/4', perspective: '1000px', cursor: 'pointer', margin: '0 auto' }}>
+      <div style={{
+        width: '100%', height: '100%', position: 'relative',
+        transformStyle: 'preserve-3d',
+        transition: 'transform 0.6s',
+        transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+      }}>
+        <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: '12px', overflow: 'hidden' }}>
+          <img src={front} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'rotate(6deg) scale(1.1)' }} />
+        </div>
+        <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: '12px', overflow: 'hidden', transform: 'rotateY(180deg)' }}>
+          <img src={back} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'rotate(-5deg) scale(1.1)' }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function MobileApp() {
   const [showModal, setShowModal] = useState(false)
   const [openDivision, setOpenDivision] = useState(null)
@@ -93,8 +161,8 @@ function MobileApp() {
   return (
     <div>
 
-      {/* BANNER SECTION */}
-      <section id="home" style={{ position: 'relative', height: '35vh', overflow: 'hidden', backgroundColor: '#0f132a' }}>
+      {/* STICKY NAV */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 1000, backgroundColor: '#0f132a' }}>
         <PillNav
           logo={gglLogo}
           logoAlt="GGL Logo"
@@ -110,12 +178,16 @@ function MobileApp() {
           hoveredPillTextColor="#e4ba4f"
           initialLoadAnimation={true}
         />
+      </div>
+
+      {/* BANNER SECTION */}
+      <section id="home" style={{ position: 'relative', height: '35vh', overflow: 'hidden', backgroundColor: '#0f132a' }}>
         <video autoPlay muted loop playsInline style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', minWidth: '100%', minHeight: '100%', objectFit: 'cover', opacity: 0.4 }}>
           <source src={heroVideo} type="video/mp4" />
         </video>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(10,22,40,0.3) 0%, rgba(10,22,40,0.7) 85%, #0f132a 100%)' }} />
         <div style={{ position: 'relative', zIndex: 10, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 20px' }}>
-          <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(3rem, 10vw, 8rem)', fontWeight: 900, letterSpacing: '0.15em', margin: 0, marginTop: '8rem', textShadow: '0 0 40px rgba(213,175,76,0.4)' }}>
+          <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(3rem, 10vw, 8rem)', fontWeight: 900, letterSpacing: '0.15em', margin: 0, textShadow: '0 0 40px rgba(213,175,76,0.4)' }}>
             <ShinyText text="GGL" color="#d5af4c" shineColor="#fff8dc" speed={3} spread={120} direction="left" />
           </h1>
           <SplitText text="Feel Like A Pro" tag="p" delay={80} duration={0.8} ease="power3.out" from={{ opacity: 0, y: 30 }} to={{ opacity: 1, y: 0 }} textAlign="center" className="" style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 2.5vw, 1.4rem)', fontWeight: 400, color: '#ffffff', letterSpacing: '0.4em', marginTop: '1rem', textTransform: 'uppercase' }} />
@@ -124,9 +196,9 @@ function MobileApp() {
 
       {/* TOURNAMENT SECTION */}
       <section id="tournament" style={{ backgroundColor: '#0f132a', padding: '0' }}>
-        <div style={{ borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '16px 20px', textAlign: 'center' }}>
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.4rem)', color: '#ffffff', margin: '0 0 6px' }}>Next Tournament: 17–18 December 2026</p>
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.4rem)', color: '#ffffff', margin: 0 }}>Hosted at Rondebosch Golf Club</p>
+        <div style={{ borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '20px', textAlign: 'center' }}>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 5vw, 1.8rem)', color: '#ffffff', margin: '0 0 8px' }}>Next Tournament: 17–18 December 2026</p>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 5vw, 1.8rem)', color: '#ffffff', margin: 0 }}>Hosted at Rondebosch Golf Club</p>
         </div>
         <div style={{ padding: '40px 20px', textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '20px' }}>
@@ -147,11 +219,11 @@ function MobileApp() {
         <img src={prizesImage} alt="Golf course" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'right center', opacity: 1, pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 8%, transparent 92%, #0f132a 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px 40px' }}>
-          <div style={{ display: 'inline-block', border: '2px solid #d5af4c', borderRadius: '50px', padding: '10px 40px', marginBottom: '12px', backgroundColor: 'rgba(15, 19, 42, 0.85)' }}>
-            <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.2rem, 5vw, 2rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.3em' }}>PRIZES</span>
-          </div>
 
-          {/* Tap to expand prompt — dark navy */}
+          {/* PRIZES heading — big and prominent */}
+          <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2.5rem, 12vw, 5rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.2em', margin: '0 0 8px', textTransform: 'uppercase', textAlign: 'center' }}>PRIZES</h1>
+          <div style={{ height: '2px', backgroundColor: '#d5af4c', width: '80%', maxWidth: '300px', marginBottom: '24px' }} />
+
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Tap a division to expand</p>
 
           {/* Accordion Divisions */}
@@ -198,15 +270,15 @@ function MobileApp() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(to bottom, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(to top, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
 
-        {/* 2 Million Rand box — top of image */}
-        <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: '90%', maxWidth: '360px' }}>
-          <div style={{ backgroundColor: 'rgba(15, 19, 42, 0.85)', border: '2px solid #d5af4c', borderRadius: '12px', padding: '16px 28px', textAlign: 'center' }}>
-            <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.8rem, 8vw, 3.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>2 Million Rand</span>
-            <span style={{ fontFamily: 'Orbitron, sans-serif', fontStyle: 'italic', fontSize: 'clamp(1.8rem, 8vw, 3.2rem)', color: '#ffffff', letterSpacing: '0.02em', display: 'block', paddingLeft: '8px' }}>hole-in-1</span>
+        {/* 2 Million Rand — top of image, same size as Shoot Your Shot heading */}
+        <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: '90%', maxWidth: '360px', textAlign: 'center' }}>
+          <div style={{ backgroundColor: 'rgba(15, 19, 42, 0.85)', border: '2px solid #d5af4c', borderRadius: '12px', padding: '16px 28px' }}>
+            <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>2 Million Rand</span>
+            <span style={{ fontFamily: 'Orbitron, sans-serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', color: '#ffffff', letterSpacing: '0.02em', display: 'block' }}>hole-in-1</span>
           </div>
         </div>
 
-        {/* Enter Now — centre of image */}
+        {/* Enter Now — centre */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
           <button className="mob-claim-btn mob-enter-btn" onClick={() => setShowModal(true)}>ENTER NOW</button>
         </div>
@@ -221,11 +293,10 @@ function MobileApp() {
       {/* SHOOT YOUR SHOT SECTION */}
       <div style={{ position: 'relative', backgroundColor: '#0f132a', overflow: 'visible' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${shootYourShotBg})`, backgroundSize: 'cover', backgroundPosition: 'center top', opacity: 0.6, zIndex: 0 }} />
-        <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '85%', pointerEvents: 'none', zIndex: 25 }} />
+        <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '90%', pointerEvents: 'none', zIndex: 25 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%)', pointerEvents: 'none', zIndex: 1 }} />
-        <div style={{ position: 'relative', zIndex: 10, padding: '80px 20px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ position: 'relative', zIndex: 10, padding: '60px 20px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-          {/* Heading */}
           <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.15em', margin: '0 0 12px', textTransform: 'uppercase', textAlign: 'center' }}>
             Shoot Your Shot
           </h2>
@@ -234,8 +305,7 @@ function MobileApp() {
             <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
           </div>
 
-          {/* Bullet points */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', width: '100%', maxWidth: '400px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', width: '100%', maxWidth: '400px', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
               <span style={{ fontSize: '2rem', lineHeight: 1, flexShrink: 0 }}>🏆</span>
               <div>
@@ -259,7 +329,7 @@ function MobileApp() {
             </div>
           </div>
 
-          {/* Postcard 1 — directly under text */}
+          {/* Postcard 1 */}
           <div style={{ width: '80%', maxWidth: '340px' }}>
             <img src={postcardImage} alt="GGL players on golf cart" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(6deg)' }} />
           </div>
@@ -270,37 +340,23 @@ function MobileApp() {
       {/* FAQ SECTION */}
       <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#0f132a', padding: '80px 20px 40px', borderTop: '2px solid #d5af4c' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.4rem)', color: '#ffffff', margin: '0 0 8px', letterSpacing: '0.05em' }}>FAQ's:</p>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 5vw, 1.8rem)', color: '#ffffff', margin: '0 0 8px', letterSpacing: '0.05em' }}>FAQ's:</p>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '300px', margin: '0 auto 12px' }} />
-          <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.8rem, 8vw, 3.5rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>Global Golf League</h2>
+          <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2rem, 9vw, 4rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>Global Golf League</h2>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '300px', margin: '0 auto 12px' }} />
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.4rem)', color: '#ffffff', margin: 0, letterSpacing: '0.05em' }}>GGL New Era Tournament</p>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 5vw, 1.8rem)', color: '#ffffff', margin: 0, letterSpacing: '0.05em' }}>GGL New Era Tournament</p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', marginBottom: '40px' }}>
-          <div>
-            <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 3.5vw, 1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>What is the entry fee:</p>
-            <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>The entry fee is as follows per division; Division 1: R3000, Division 2: R2000, Division 3: R1000</p>
-          </div>
-          <div>
-            <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 3.5vw, 1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>How many balls per division:</p>
-            <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>17 Three-Balls per division.</p>
-          </div>
-          <div>
-            <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 3.5vw, 1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>How many players in total:</p>
-            <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>There are spots available for 153 players at the tournament.</p>
-          </div>
+        {/* FAQ Flip Cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
+          {faqItems.map((item, i) => (
+            <FlipCard key={i} question={item.question} answer={item.answer} />
+          ))}
         </div>
 
-        {/* Postcards side by side — bigger */}
-        <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', justifyContent: 'center', marginBottom: '20px' }}>
-          <div style={{ width: '48%' }}>
-            <img src={postcardImage2} alt="GGL golfer with flag" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(-5deg)' }} />
-          </div>
-          <div style={{ width: '48%' }}>
-            <img src={postcardImage3} alt="Golfer lining up putt" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(6deg)' }} />
-          </div>
-        </div>
+        {/* Flip Postcard */}
+        <FlipPostcard front={postcardImage2} back={postcardImage3} />
+
       </section>
 
       {/* FOOTER */}
