@@ -72,17 +72,19 @@ function MobileApp() {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !confettiFired.current) {
             confettiFired.current = true
-            confetti({
-              particleCount: 120,
-              spread: 80,
-              origin: { y: 0.5 },
-              colors: ['#d5af4c', '#f0d080', '#b8960a', '#fff8dc', '#e4ba4f', '#c9981a'],
-              scalar: 1.2,
-            })
+            setTimeout(() => {
+              confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.5 },
+                colors: ['#d5af4c', '#f0d080', '#b8960a', '#fff8dc', '#e4ba4f', '#c9981a'],
+                scalar: 1.2,
+              })
+            }, 600)
           }
         })
       },
-      { threshold: 0.4 }
+      { threshold: 0.7 }
     )
     if (holeInOneRef.current) observer.observe(holeInOneRef.current)
     return () => observer.disconnect()
@@ -148,7 +150,9 @@ function MobileApp() {
           <div style={{ display: 'inline-block', border: '2px solid #d5af4c', borderRadius: '50px', padding: '10px 40px', marginBottom: '12px', backgroundColor: 'rgba(15, 19, 42, 0.85)' }}>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.2rem, 5vw, 2rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.3em' }}>PRIZES</span>
           </div>
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: 'rgba(213,175,76,0.9)', margin: '0 0 32px', letterSpacing: '0.05em' }}>Tap a division to expand</p>
+
+          {/* Tap to expand prompt — dark navy */}
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Tap a division to expand</p>
 
           {/* Accordion Divisions */}
           <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -193,13 +197,20 @@ function MobileApp() {
         <img src={holeInOneImage} alt="Hole in one" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(to bottom, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(to top, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 10, gap: '24px' }}>
+
+        {/* 2 Million Rand box — top of image */}
+        <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: '90%', maxWidth: '360px' }}>
           <div style={{ backgroundColor: 'rgba(15, 19, 42, 0.85)', border: '2px solid #d5af4c', borderRadius: '12px', padding: '16px 28px', textAlign: 'center' }}>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.8rem, 8vw, 3.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>2 Million Rand</span>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontStyle: 'italic', fontSize: 'clamp(1.8rem, 8vw, 3.2rem)', color: '#ffffff', letterSpacing: '0.02em', display: 'block', paddingLeft: '8px' }}>hole-in-1</span>
           </div>
+        </div>
+
+        {/* Enter Now — centre of image */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
           <button className="mob-claim-btn mob-enter-btn" onClick={() => setShowModal(true)}>ENTER NOW</button>
         </div>
+
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(15, 19, 42, 0.92)', borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '14px 20px', textAlign: 'center', zIndex: 10 }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', letterSpacing: '0.05em', margin: 0, opacity: 0.9 }}>
             Two chances at 2 Million Rand. Hole in one, Par 4. T's and C's apply.
@@ -210,21 +221,21 @@ function MobileApp() {
       {/* SHOOT YOUR SHOT SECTION */}
       <div style={{ position: 'relative', backgroundColor: '#0f132a', overflow: 'visible' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${shootYourShotBg})`, backgroundSize: 'cover', backgroundPosition: 'center top', opacity: 0.6, zIndex: 0 }} />
-        <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-80px', left: 0, width: '70%', pointerEvents: 'none', zIndex: 25 }} />
+        <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '85%', pointerEvents: 'none', zIndex: 25 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%)', pointerEvents: 'none', zIndex: 1 }} />
-        <div style={{ position: 'relative', zIndex: 10, padding: '60px 20px 100px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ position: 'relative', zIndex: 10, padding: '80px 20px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-          {/* Heading with underline gold bands */}
+          {/* Heading */}
           <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.15em', margin: '0 0 12px', textTransform: 'uppercase', textAlign: 'center' }}>
             Shoot Your Shot
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', maxWidth: '400px', marginBottom: '40px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', maxWidth: '400px', marginBottom: '32px' }}>
             <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
             <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
           </div>
 
           {/* Bullet points */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', width: '100%', maxWidth: '400px', marginBottom: '40px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', width: '100%', maxWidth: '400px', marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
               <span style={{ fontSize: '2rem', lineHeight: 1, flexShrink: 0 }}>🏆</span>
               <div>
@@ -248,7 +259,7 @@ function MobileApp() {
             </div>
           </div>
 
-          {/* Postcard 1 centred below text */}
+          {/* Postcard 1 — directly under text */}
           <div style={{ width: '80%', maxWidth: '340px' }}>
             <img src={postcardImage} alt="GGL players on golf cart" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(6deg)' }} />
           </div>
@@ -257,7 +268,7 @@ function MobileApp() {
       </div>
 
       {/* FAQ SECTION */}
-      <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#0f132a', padding: '60px 20px 40px', borderTop: '2px solid #d5af4c' }}>
+      <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#0f132a', padding: '80px 20px 40px', borderTop: '2px solid #d5af4c' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.4rem)', color: '#ffffff', margin: '0 0 8px', letterSpacing: '0.05em' }}>FAQ's:</p>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '300px', margin: '0 auto 12px' }} />
@@ -281,12 +292,12 @@ function MobileApp() {
           </div>
         </div>
 
-        {/* Postcards side by side */}
+        {/* Postcards side by side — bigger */}
         <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', justifyContent: 'center', marginBottom: '20px' }}>
-          <div style={{ width: '45%' }}>
+          <div style={{ width: '48%' }}>
             <img src={postcardImage2} alt="GGL golfer with flag" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(-5deg)' }} />
           </div>
-          <div style={{ width: '45%' }}>
+          <div style={{ width: '48%' }}>
             <img src={postcardImage3} alt="Golfer lining up putt" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(6deg)' }} />
           </div>
         </div>
@@ -296,13 +307,11 @@ function MobileApp() {
       <footer style={{ backgroundColor: '#0a0d1f', borderTop: '1px solid #d5af4c', padding: '40px 20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', maxWidth: '500px', margin: '0 auto' }}>
 
-          {/* Logo + copyright */}
           <div>
             <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '2rem', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.2em', margin: '0 0 12px' }}>GGL</h2>
             <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '1rem', color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.6 }}>© 2026 Global Golf League.<br />All rights reserved.</p>
           </div>
 
-          {/* Navigation */}
           <div>
             <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', fontWeight: 700, color: '#d5af4c', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 16px' }}>Navigation</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -317,7 +326,6 @@ function MobileApp() {
             </div>
           </div>
 
-          {/* Contact */}
           <div>
             <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', fontWeight: 700, color: '#d5af4c', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 16px' }}>Contact</p>
             <a
@@ -326,7 +334,6 @@ function MobileApp() {
             >globalgolfleague.ggl@gmail.com</a>
           </div>
 
-          {/* Social */}
           <div>
             <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', fontWeight: 700, color: '#d5af4c', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 16px' }}>Follow Us</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
