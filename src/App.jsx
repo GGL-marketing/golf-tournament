@@ -1,25 +1,13 @@
-import heroVideo from './assets/hero-video.mp4'
-import gglLogo from './assets/GGL_LOGO.png'
-import prizesImage from './assets/plain_image.webp'
-import holeInOneImage from './assets/hole_in_1.webp'
-import shootYourShotBg from './assets/arial_golf_plain_background.webp'
-import golfBalls from './assets/golf_balls_item.webp'
-import postcardImage from './assets/postcard_image_1.webp'
-import postcardImage2 from './assets/postcard_image_2.webp'
-import postcardImage3 from './assets/postcard_image_3.webp'
-import PillNav from './PillNav'
-import SplitText from './SplitText'
-import ShinyText from './ShinyText'
-import CircleAnnotation from './CircleAnnotation'
-import MagicBento from './MagicBento'
-import EntryModal from './EntryModal'
-import { useRef, useState, useEffect } from 'react'
-import confetti from 'canvas-confetti'
-import './App.css'
-
 function App() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const [showModal, setShowModal] = useState(false)
   const confettiRef = useRef(null)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const fireConfetti = () => {
     confetti({
@@ -42,6 +30,8 @@ function App() {
     document.addEventListener('click', handleJoinClick)
     return () => document.removeEventListener('click', handleJoinClick)
   }, [])
+
+  if (isMobile) return <MobileApp />
 
   return (
     <div>

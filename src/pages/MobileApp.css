@@ -1,0 +1,51 @@
+.mob-claim-btn {
+  width: 280px;
+  height: 60px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(to right, #77530a, #ffd277, #77530a, #77530a, #ffd277, #77530a);
+  background-size: 250%;
+  background-position: left;
+  color: #ffd277;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition-duration: 1s;
+  overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+}
+
+.mob-claim-btn::before {
+  position: absolute;
+  content: "CLAIM MY SPOT";
+  color: #ffd277;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 97%;
+  height: 90%;
+  border-radius: 8px;
+  transition-duration: 1s;
+  background-color: rgba(0, 0, 0, 0.842);
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+}
+
+.mob-enter-btn::before {
+  content: "ENTER NOW";
+}
+
+.mob-claim-btn:hover {
+  background-position: right;
+}
+
+.mob-claim-btn:active {
+  transform: scale(0.95);
+}
