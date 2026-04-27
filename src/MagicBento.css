@@ -186,7 +186,7 @@
   user-select: none;
 }
 
-@media (max-width: 599px) {
+@media (max-width: 1024px) {
   .card-grid {
     grid-template-columns: 1fr;
     width: 90%;
@@ -198,8 +198,21 @@
   }
 }
 
-@media (min-width: 600px) {
+@media (min-width: 1025px) {
   .card-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── PRIZES SECTION RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .prizes-content {
+    width: 100% !important;
+    padding: 60px 40px 80px !important;
+    align-items: center !important;
+  }
+
+  .prizes-content .card-grid {
+    max-width: 300px;  /* 👈 change this number */
   }
 }

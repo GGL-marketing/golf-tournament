@@ -2,7 +2,8 @@ import heroVideo from './assets/hero-video.mp4'
 import gglLogo from './assets/GGL_LOGO.png'
 import prizesImage from './assets/plain_image.webp'
 import holeInOneImage from './assets/hole_in_1.webp'
-import shootYourShotBg from './assets/arial_golf_balls_background2.webp'
+import shootYourShotBg from './assets/arial_golf_plain_background.webp'
+import golfBalls from './assets/golf_balls_item.webp'
 import postcardImage from './assets/postcard_image_1.webp'
 import postcardImage2 from './assets/postcard_image_2.webp'
 import postcardImage3 from './assets/postcard_image_3.webp'
@@ -11,11 +12,13 @@ import SplitText from './SplitText'
 import ShinyText from './ShinyText'
 import CircleAnnotation from './CircleAnnotation'
 import MagicBento from './MagicBento'
-import { useRef } from 'react'
+import EntryModal from './EntryModal'
+import { useRef, useState, useEffect } from 'react'
 import confetti from 'canvas-confetti'
 import './App.css'
 
 function App() {
+  const [showModal, setShowModal] = useState(false)
   const confettiRef = useRef(null)
 
   const fireConfetti = () => {
@@ -27,6 +30,18 @@ function App() {
       scalar: 1.2,
     })
   }
+
+  useEffect(() => {
+    const handleJoinClick = (e) => {
+      const link = e.target.closest('a[href="#join"]')
+      if (link) {
+        e.preventDefault()
+        setShowModal(true)
+      }
+    }
+    document.addEventListener('click', handleJoinClick)
+    return () => document.removeEventListener('click', handleJoinClick)
+  }, [])
 
   return (
     <div>
@@ -80,19 +95,16 @@ function App() {
             </span>
           </h2>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '600px', margin: '0 auto 40px' }} />
-          <a href="#join" style={{ textDecoration: 'none' }}>
-            <button className="claim-btn">CLAIM MY SPOT</button>
-          </a>
+          <button className="claim-btn" onClick={() => setShowModal(true)}>CLAIM MY SPOT</button>
         </div>
       </section>
 
       {/* PRIZES SECTION */}
       <section id="prizes" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#0f132a', minHeight: '600px' }}>
         <img src={prizesImage} alt="Golf course" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'right center', opacity: 1, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(15,19,42,0.98) 0%, rgba(15,19,42,0.92) 35%, rgba(15,19,42,0.5) 60%, rgba(15,19,42,0.15) 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 8%, transparent 92%, #0f132a 100%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '100px 10px 80px 300px', width: '55%' }}>
-          <div style={{ display: 'inline-block', border: '2px solid #d5af4c', borderRadius: '50px', padding: '10px 40px', marginBottom: '48px' }}>
+        <div className="prizes-content" style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '100px 40px 80px 40px', width: '100%' }}>
+          <div style={{ display: 'inline-block', border: '2px solid #d5af4c', borderRadius: '50px', padding: '10px 40px', marginBottom: '48px', backgroundColor: 'rgba(15, 19, 42, 0.85)' }}>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.2rem, 3vw, 2rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.3em' }}>PRIZES</span>
           </div>
           <MagicBento textAutoHide={false} enableStars={true} enableSpotlight={true} enableBorderGlow={true} enableTilt={true} enableMagnetism={true} clickEffect={true} spotlightRadius={200} particleCount={10} glowColor="213, 175, 76" />
@@ -114,9 +126,7 @@ function App() {
           </div>
         </div>
         <div style={{ position: 'absolute', bottom: '600px', left: '27%', zIndex: 10 }}>
-          <a href="#join" style={{ textDecoration: 'none' }}>
-            <button className="claim-btn enter-btn">ENTER NOW</button>
-          </a>
+          <button className="claim-btn enter-btn" onClick={() => setShowModal(true)}>ENTER NOW</button>
         </div>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(15, 19, 42, 0.92)', borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '18px 40px', textAlign: 'center', zIndex: 10 }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 2vw, 1.3rem)', color: '#ffffff', letterSpacing: '0.05em', margin: 0, opacity: 0.9 }}>
@@ -125,140 +135,187 @@ function App() {
         </div>
       </section>
 
-      {/* SHOOT YOUR SHOT SECTION */}
-      <section style={{ position: 'relative', backgroundColor: '#0f132a' }}>
+ {/* ── SHOOT YOUR SHOT + FAQ WRAPPER ── */}
+<div className="sys-wrapper">
 
-        {/* Background image — full size, no cropping */}
-        <img
-          src={shootYourShotBg}
-          alt=""
-          style={{ display: 'block', width: '100%', height: 'auto', opacity: 0.6, pointerEvents: 'none' }}
-        />
+  {/* SHOOT YOUR SHOT SECTION */}
+  <section className="sys-section">
 
-        {/* Top & bottom navy fade */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%, transparent 90%, #0f132a 100%)', pointerEvents: 'none' }} />
+    <div className="sys-bg" style={{ backgroundImage: `url(${shootYourShotBg})` }} />
+    <img src={golfBalls} alt="" className="sys-golfballs" />
+    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%)', pointerEvents: 'none', zIndex: 1 }} />
 
-        {/* Content overlaid on top */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 10, padding: '70px 40px 60px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div className="sys-content">
 
-          {/* Heading with double lines */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px', width: '100%', maxWidth: '900px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
-              <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
-              <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
-            </div>
-            <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 4vw, 3rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.15em', margin: 0, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-              Shoot Your Shot
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
-              <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
-              <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px', width: '100%', maxWidth: '900px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+          <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+          <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+        </div>
+        <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 4vw, 3rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.15em', margin: 0, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+          Shoot Your Shot
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+          <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+          <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+        </div>
+      </div>
+
+      <div className="sys-row">
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '36px', marginTop: '48px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginLeft: '0%' }}>
+            <span style={{ fontSize: '2.5rem', lineHeight: 1, flexShrink: 0 }}>🏆</span>
+            <div>
+              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1rem, 2vw, 1.4rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 6px', textTransform: 'uppercase' }}>1 Mulligan</p>
+              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 1.5vw, 1.1rem)', fontWeight: 400, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>Over the 2 day tournament</p>
             </div>
           </div>
-
-          {/* Two column layout */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '60px', width: '100%', maxWidth: '1100px' }}>
-
-            {/* Left — staggered bullet points */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '36px', marginTop: '60px' }}>
-
-              {/* Bullet 1 */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginLeft: '0%' }}>
-                <span style={{ fontSize: '2.5rem', lineHeight: 1, flexShrink: 0 }}>🏆</span>
-                <div>
-                  <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1rem, 2vw, 1.4rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 6px', textTransform: 'uppercase' }}>1 Mulligan</p>
-                  <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 1.5vw, 1.1rem)', fontWeight: 400, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>Over the 2 day tournament</p>
-                </div>
-              </div>
-
-              {/* Bullet 2 */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginLeft: '8%' }}>
-                <span style={{ fontSize: '2.5rem', lineHeight: 1, flexShrink: 0 }}>🏆</span>
-                <div>
-                  <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1rem, 2vw, 1.4rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 6px', textTransform: 'uppercase' }}>Marshalls</p>
-                  <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 1.5vw, 1.1rem)', fontWeight: 400, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>To keep the pace of play</p>
-                </div>
-              </div>
-
-              {/* Bullet 3 */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginLeft: '16%' }}>
-                <span style={{ fontSize: '2.5rem', lineHeight: 1, flexShrink: 0 }}>🏆</span>
-                <div>
-                  <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1rem, 2vw, 1.4rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 6px', textTransform: 'uppercase' }}>Broadcast Coverage</p>
-                  <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 1.5vw, 1.1rem)', fontWeight: 400, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>The event will be live streamed</p>
-                </div>
-              </div>
-
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginLeft: '8%' }}>
+            <span style={{ fontSize: '2.5rem', lineHeight: 1, flexShrink: 0 }}>🏆</span>
+            <div>
+              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1rem, 2vw, 1.4rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 6px', textTransform: 'uppercase' }}>Marshalls</p>
+              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 1.5vw, 1.1rem)', fontWeight: 400, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>To keep the pace of play</p>
             </div>
-
-            {/* Right — tilted postcard image 1 (top right) */}
-            <div style={{ position: 'absolute', right: '15%', top: '60px' }}>
-              <img
-                src={postcardImage}
-                alt="GGL players on golf cart"
-                style={{ width: '420px', borderRadius: '12px', transform: 'rotate(6deg)' }}
-              />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginLeft: '16%' }}>
+            <span style={{ fontSize: '2.5rem', lineHeight: 1, flexShrink: 0 }}>🏆</span>
+            <div>
+              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1rem, 2vw, 1.4rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 6px', textTransform: 'uppercase' }}>Broadcast Coverage</p>
+              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.8rem, 1.5vw, 1.1rem)', fontWeight: 400, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>The event will be live streamed</p>
             </div>
+          </div>
+        </div>
 
-            {/* Postcard 2 — floating between Shoot Your Shot and FAQ */}
-<div style={{ position: 'absolute', right: '15%', bottom: '-200px', zIndex: 20 }}>
-  <img
-    src={postcardImage2}
-    alt="GGL golfer with flag"
-    style={{ width: '420px', borderRadius: '12px', transform: 'rotate(-5deg)' }}
-  />
+        {/* Postcard 1 — in flow */}
+        <div className="sys-postcard-1">
+          <img src={postcardImage} alt="GGL players on golf cart" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(6deg)' }} />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+{/* Postcard 2 — desktop: absolute between sections, tablet: inside FAQ row */}
+  <div className="sys-postcard-2">
+    <img src={postcardImage2} alt="GGL golfer with flag" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(-5deg)' }} />
+  </div>
+
+  {/* FAQ SECTION */}
+  <section className="faq-section">
+    <div style={{ textAlign: 'center', marginBottom: '60px', paddingTop: '60px' }}>
+      <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)', color: '#ffffff', margin: '0 0 8px', letterSpacing: '0.05em' }}>FAQ's:</p>
+      <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '600px', margin: '0 auto 12px' }} />
+      <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2rem, 6vw, 5rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>Global Golf League</h2>
+      <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '600px', margin: '0 auto 12px' }} />
+      <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)', color: '#ffffff', margin: 0, letterSpacing: '0.05em' }}>GGL New Era Tournament</p>
+    </div>
+
+    <div className="faq-row">
+
+      {/* Text — MIDDLE */}
+      <div className="faq-text" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '40px' }}>
+        <div>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>What is the entry fee:</p>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 1.8vw, 1.3rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>The entry fee is as follows per division; Division 1: R3000, Division 2: R2000, Division 3: R1000</p>
+        </div>
+        <div>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>How many balls per division:</p>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 1.8vw, 1.3rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>17 Three-Balls per division.</p>
+        </div>
+        <div>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>How many players in total:</p>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 1.8vw, 1.3rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>There are spots available for 153 players at the tournament.</p>
+        </div>
+      </div>
+
+      {/* Postcards wrapper — side by side on mobile, transparent on desktop/tablet */}
+      <div className="faq-postcards-wrapper">
+        <div className="sys-postcard-2-faq">
+          <img src={postcardImage2} alt="GGL golfer with flag" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(-5deg)' }} />
+        </div>
+        <div className="faq-postcard-3">
+          <img src={postcardImage3} alt="Golfer lining up putt" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(6deg)' }} />
+        </div>
+      </div>
+
+    </div>
+  </section>
+
 </div>
+{/* ── END WRAPPER ── */}
+      {/* MODAL */}
+      {showModal && <EntryModal onClose={() => setShowModal(false)} />}
 
-          </div>
-        </div>
-      </section>
+      {/* FOOTER */}
+      <footer style={{ backgroundColor: '#0a0d1f', borderTop: '1px solid #d5af4c', padding: '60px 100px 40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', maxWidth: '1200px', margin: '0 auto', gap: '60px' }}>
 
-      {/* FAQ SECTION */}
-      <section style={{ position: 'relative', backgroundColor: '#0f132a', padding: '0 100px 80px' }}>
-
-        {/* Heading */}
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)', color: '#ffffff', margin: '0 0 8px', letterSpacing: '0.05em' }}>FAQ's:</p>
-          <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '600px', margin: '0 auto 12px' }} />
-          <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2rem, 6vw, 5rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>Global Golf League</h2>
-          <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '600px', margin: '0 auto 12px' }} />
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)', color: '#ffffff', margin: 0, letterSpacing: '0.05em' }}>GGL New Era Tournament</p>
-        </div>
-
-        {/* Two column layout */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '80px', maxWidth: '1100px', margin: '0 auto' }}>
-
-          {/* Left — FAQ items */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '40px', paddingLeft: '40px' }}>
-
-            <div>
-              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>What is the entry fee:</p>
-              <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 1.8vw, 1.3rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>The entry fee is as follows per division; Division 1: R3000, Division 2: R2000, Division 3: R1000</p>
-            </div>
-
-            <div>
-              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>How many balls per division:</p>
-              <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 1.8vw, 1.3rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>17 Three-Balls per division.</p>
-            </div>
-
-            <div>
-              <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>How many players in total:</p>
-              <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 1.8vw, 1.3rem)', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>There are spots available for 153 players at the tournament.</p>
-            </div>
-
+          {/* Logo + copyright */}
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '2rem', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.2em', margin: '0 0 16px' }}>GGL</h2>
+            <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '1rem', color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.6 }}>© 2026 Global Golf League.<br />All rights reserved.</p>
           </div>
 
-          {/* Right — postcard 3 */}
-<div style={{ position: 'absolute', right: '15%', top: '60px', zIndex: 20 }}>
-  <img
-    src={postcardImage3}
-    alt="Golfer lining up putt"
-    style={{ width: '420px', borderRadius: '12px', transform: 'rotate(6deg)' }}
-  />
-</div>
+          {/* Navigation */}
+          <div style={{ flex: 1 }}>
+            <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', fontWeight: 700, color: '#d5af4c', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 20px' }}>Navigation</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {['Tournament', 'Prizes', 'Join'].map((item) => (
+                <a
+                  key={item}
+                  href={item === 'Join' ? '#' : `#${item.toLowerCase()}`}
+                  onClick={item === 'Join' ? (e) => { e.preventDefault(); setShowModal(true) } : undefined}
+                  style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase', transition: 'color 0.2s', cursor: 'pointer' }}
+                  onMouseEnter={e => e.target.style.color = '#d5af4c'}
+                  onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.7)'}
+                >{item}</a>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div style={{ flex: 1 }}>
+            <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', fontWeight: 700, color: '#d5af4c', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 20px' }}>Contact</p>
+            <a
+              href="mailto:globalgolfleague.ggl@gmail.com"
+              style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', letterSpacing: '0.05em' }}
+              onMouseEnter={e => e.target.style.color = '#d5af4c'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.7)'}
+            >globalgolfleague.ggl@gmail.com</a>
+          </div>
+
+          {/* Social */}
+          <div style={{ flex: 1 }}>
+            <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', fontWeight: 700, color: '#d5af4c', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 20px' }}>Follow Us</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <a
+                href="https://www.instagram.com/global_golf_league/"
+                target="_blank"
+                rel="noreferrer"
+                style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase' }}
+                onMouseEnter={e => e.target.style.color = '#d5af4c'}
+                onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.7)'}
+              >Instagram</a>
+              <a
+                href="https://www.tiktok.com/@global_golf_league"
+                target="_blank"
+                rel="noreferrer"
+                style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase' }}
+                onMouseEnter={e => e.target.style.color = '#d5af4c'}
+                onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.7)'}
+              >TikTok</a>
+            </div>
+          </div>
 
         </div>
-      </section>
+
+        {/* Bottom line */}
+        <div style={{ maxWidth: '1200px', margin: '40px auto 0', borderTop: '1px solid rgba(213,175,76,0.2)', paddingTop: '24px', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>Designed & Built for Global Golf League</p>
+        </div>
+
+      </footer>
 
     </div>
   )
