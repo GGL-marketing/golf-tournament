@@ -79,7 +79,8 @@ function FlipCard({ question, answer }) {
           backgroundColor: 'rgba(15,19,42,0.9)', border: '1px solid rgba(213,175,76,0.4)',
           borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
         }}>
-          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'center', margin: 0 }}>{question}</p>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'center', margin: '0 0 8px' }}>{question}</p>
+<p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: 'rgba(213,175,76,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'center', margin: 0 }}>Tap to reveal answer</p>
         </div>
         {/* Back */}
         <div style={{
@@ -96,20 +97,59 @@ function FlipCard({ question, answer }) {
 }
 
 function FlipPostcard({ front, back }) {
-  const [flipped, setFlipped] = useState(false)
+  const [rotation, setRotation] = useState(0)
+  const cardRef = useRef(null)
+  const lastScrollY = useRef(0)
+  const velocityRef = useRef(0)
+  const animFrameRef = useRef(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY
+      const delta = currentY - lastScrollY.current
+      lastScrollY.current = currentY
+
+      if (!cardRef.current) return
+      const rect = cardRef.current.getBoundingClientRect()
+      const inView = rect.top < window.innerHeight && rect.bottom > 0
+      if (!inView) return
+
+      velocityRef.current += delta * 0.8
+    }
+
+    const animate = () => {
+      if (Math.abs(velocityRef.current) > 0.1) {
+        setRotation(prev => prev + velocityRef.current)
+        velocityRef.current *= 0.92
+      }
+      animFrameRef.current = requestAnimationFrame(animate)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    animFrameRef.current = requestAnimationFrame(animate)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      cancelAnimationFrame(animFrameRef.current)
+    }
+  }, [])
+
+  const normalizedRotation = rotation % 360
+  const isBack = Math.abs(normalizedRotation % 360) > 90 && Math.abs(normalizedRotation % 360) < 270
+
   return (
-    <div onClick={() => setFlipped(!flipped)} style={{ width: '80%', maxWidth: '340px', aspectRatio: '3/4', perspective: '1000px', cursor: 'pointer', margin: '0 auto' }}>
+    <div ref={cardRef} style={{ width: '80%', maxWidth: '340px', aspectRatio: '3/4', perspective: '1000px', margin: '0 auto' }}>
       <div style={{
         width: '100%', height: '100%', position: 'relative',
         transformStyle: 'preserve-3d',
-        transition: 'transform 0.6s',
-        transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+        transform: `rotateY(${rotation}deg)`,
+        transition: 'none'
       }}>
         <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: '12px', overflow: 'hidden' }}>
-          <img src={front} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'rotate(6deg) scale(1.1)' }} />
+          <img src={front} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: '12px', overflow: 'hidden', transform: 'rotateY(180deg)' }}>
-          <img src={back} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'rotate(-5deg) scale(1.1)' }} />
+          <img src={back} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       </div>
     </div>
@@ -221,7 +261,7 @@ function MobileApp() {
         <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px 40px' }}>
 
           {/* PRIZES heading — big and prominent */}
-          <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2.5rem, 12vw, 5rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.2em', margin: '0 0 8px', textTransform: 'uppercase', textAlign: 'center' }}>PRIZES</h1>
+          <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2.5rem, 12vw, 5rem)', fontWeight: 900, color: '#0f132a', letterSpacing: '0.2em', margin: '0 0 8px', textTransform: 'uppercase', textAlign: 'center' }}>PRIZES</h1>
           <div style={{ height: '2px', backgroundColor: '#d5af4c', width: '80%', maxWidth: '300px', marginBottom: '24px' }} />
 
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Tap a division to expand</p>
@@ -271,7 +311,7 @@ function MobileApp() {
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(to top, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
 
         {/* 2 Million Rand — top of image, same size as Shoot Your Shot heading */}
-        <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: '90%', maxWidth: '360px', textAlign: 'center' }}>
+        <div style={{ position: 'absolute', bottom: '120px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: '90%', maxWidth: '360px', textAlign: 'center' }}>
           <div style={{ backgroundColor: 'rgba(15, 19, 42, 0.85)', border: '2px solid #d5af4c', borderRadius: '12px', padding: '16px 28px' }}>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>2 Million Rand</span>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', color: '#ffffff', letterSpacing: '0.02em', display: 'block' }}>hole-in-1</span>
@@ -291,11 +331,15 @@ function MobileApp() {
       </section>
 
       {/* SHOOT YOUR SHOT SECTION */}
-      <div style={{ position: 'relative', backgroundColor: '#0f132a', overflow: 'visible' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${shootYourShotBg})`, backgroundSize: 'cover', backgroundPosition: 'center top', opacity: 0.6, zIndex: 0 }} />
-        <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '90%', pointerEvents: 'none', zIndex: 25 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%)', pointerEvents: 'none', zIndex: 1 }} />
-        <div style={{ position: 'relative', zIndex: 10, padding: '60px 20px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+<div style={{ position: 'relative', backgroundColor: '#0f132a', overflow: 'visible' }}>
+  <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${shootYourShotBg})`, backgroundSize: 'cover', backgroundPosition: 'center top', opacity: 0.6, zIndex: 0 }} />
+  <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '110%', pointerEvents: 'none', zIndex: 25 }} />
+  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%)', pointerEvents: 'none', zIndex: 1 }} />
+  <div style={{ position: 'relative', zIndex: 10, padding: '60px 20px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
+      <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+      <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+    </div>
 
           <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.15em', margin: '0 0 12px', textTransform: 'uppercase', textAlign: 'center' }}>
             Shoot Your Shot
@@ -338,9 +382,9 @@ function MobileApp() {
       </div>
 
       {/* FAQ SECTION */}
-      <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#0f132a', padding: '80px 20px 40px', borderTop: '2px solid #d5af4c' }}>
+      <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#0f132a', padding: '120px 20px 40px', borderTop: '2px solid #d5af4c' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 5vw, 1.8rem)', color: '#ffffff', margin: '0 0 8px', letterSpacing: '0.05em' }}>FAQ's:</p>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.5rem, 6vw, 2.2rem)', color: '#ffffff', margin: '0 0 8px', letterSpacing: '0.05em' }}>FAQ's:</p>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '300px', margin: '0 auto 12px' }} />
           <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2rem, 9vw, 4rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>Global Golf League</h2>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '300px', margin: '0 auto 12px' }} />

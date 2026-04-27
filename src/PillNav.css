@@ -14,6 +14,12 @@
     left: 0;
     transform: none;
   }
+
+  .pill-logo,
+  .mobile-menu-button {
+    width: 52px;
+    height: 52px;
+  }
 }
 
 .pill-nav {
@@ -185,7 +191,7 @@ font-family: 'Orbitron', sans-serif;
 .hamburger-line {
   width: 16px;
   height: 2px;
-  background: var(--pill-bg, #fff);
+  background: #d5af4c;
   border-radius: 1px;
   transition: all 0.01s ease;
   transform-origin: center;
@@ -220,8 +226,11 @@ font-family: 'Orbitron', sans-serif;
   color: var(--pill-text, #fff);
   background-color: var(--pill-bg, #fff);
   text-decoration: none;
+  font-family: 'Orbitron', sans-serif;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   border-radius: 50px;
   transition: all 0.2s ease;
 }
