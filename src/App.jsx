@@ -45,6 +45,21 @@ function App() {
     return () => document.removeEventListener('click', handleJoinClick)
   }, [])
 
+  useEffect(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+        }
+      })
+    },
+    { threshold: 0.1 }
+  )
+  document.querySelectorAll('.fade-in-section').forEach((el) => observer.observe(el))
+  return () => observer.disconnect()
+}, [])
+
   if (isMobile) return <MobileApp />
 
   return (
@@ -80,7 +95,7 @@ function App() {
       </section>
 
       {/* TOURNAMENT SECTION */}
-      <section id="tournament" style={{ backgroundColor: '#0f132a', padding: '0' }}>
+      <section id="tournament" className="fade-in-section" style={{ backgroundColor: '#0f132a', padding: '0' }}>
         <div style={{ borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '16px 40px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 3vw, 2rem)', color: '#ffffff', margin: 0 }}>Next Tournament: 17–18 December 2026</p>
           <span style={{ color: '#d5af4c', fontSize: '1.5rem' }}>•</span>
@@ -104,7 +119,7 @@ function App() {
       </section>
 
       {/* PRIZES SECTION */}
-      <section id="prizes" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#0f132a', minHeight: '600px' }}>
+      <section id="prizes" className="fade-in-section" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#0f132a', minHeight: '600px' }}>
         <img src={prizesImage} alt="Golf course" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'right center', opacity: 1, pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 8%, transparent 92%, #0f132a 100%)', pointerEvents: 'none' }} />
         <div className="prizes-content" style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '100px 40px 80px 40px', width: '100%' }}>
@@ -118,8 +133,8 @@ function App() {
         </div>
       </section>
 
-      {/* HOLE IN ONE SECTION */}
-      <section style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#0f132a', height: '900px' }}>
+     {/* HOLE IN ONE SECTION */}
+      <section className="fade-in-section" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#0f132a', height: '900px' }}>
         <img src={holeInOneImage} alt="Hole in one" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '120px', background: 'linear-gradient(to bottom, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '120px', background: 'linear-gradient(to top, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
@@ -139,11 +154,11 @@ function App() {
         </div>
       </section>
 
- {/* ── SHOOT YOUR SHOT + FAQ WRAPPER ── */}
+  {/* ── SHOOT YOUR SHOT + FAQ WRAPPER ── */}
 <div className="sys-wrapper">
 
   {/* SHOOT YOUR SHOT SECTION */}
-  <section className="sys-section">
+  <section className="sys-section fade-in-section">
 
     <div className="sys-bg" style={{ backgroundImage: `url(${shootYourShotBg})` }} />
     <img src={golfBalls} alt="" className="sys-golfballs" />
@@ -205,9 +220,9 @@ function App() {
     <img src={postcardImage2} alt="GGL golfer with flag" style={{ width: '100%', borderRadius: '12px', transform: 'rotate(-5deg)' }} />
   </div>
 
-  {/* FAQ SECTION */}
-  <section className="faq-section">
-    <div style={{ textAlign: 'center', marginBottom: '60px', paddingTop: '60px' }}>
+{/* FAQ SECTION */}
+<section className="faq-section fade-in-section">
+  <div style={{ textAlign: 'center', marginBottom: '60px', paddingTop: '60px' }}>
       <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)', color: '#ffffff', margin: '0 0 8px', letterSpacing: '0.05em' }}>FAQ's:</p>
       <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '600px', margin: '0 auto 12px' }} />
       <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2rem, 6vw, 5rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.1em', margin: '0 0 8px', textTransform: 'uppercase' }}>Global Golf League</h2>
