@@ -118,7 +118,7 @@
 .sys-postcard-2 {
   position: absolute;
   right: 8%;
-  bottom: 400px;
+  bottom: 340px;
   width: clamp(200px, 28vw, 400px);
   z-index: 20;
   pointer-events: none;
@@ -132,7 +132,7 @@
   position: relative;
   z-index: 10;
   background-color: #0f132a;
-  padding: 0 100px 40px;
+  padding: 0 100px 110px;
   border-top: 2px solid #d5af4c;
   overflow: visible;
 }
@@ -150,6 +150,7 @@
   flex-shrink: 0;
   width: clamp(200px, 28vw, 400px);
   padding-top: 200px;
+  margin-bottom: -100px;
 }
 
 .faq-postcards-wrapper {

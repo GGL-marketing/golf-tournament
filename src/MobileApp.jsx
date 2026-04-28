@@ -114,13 +114,13 @@ function FlipPostcard({ front, back }) {
       const inView = rect.top < window.innerHeight && rect.bottom > 0
       if (!inView) return
 
-      velocityRef.current += delta * 0.8
+      velocityRef.current += delta * 0.3
     }
 
     const animate = () => {
       if (Math.abs(velocityRef.current) > 0.1) {
         setRotation(prev => prev + velocityRef.current)
-        velocityRef.current *= 0.92
+        velocityRef.current *= 0.99
       }
       animFrameRef.current = requestAnimationFrame(animate)
     }
