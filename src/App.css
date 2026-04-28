@@ -118,7 +118,7 @@
 .sys-postcard-2 {
   position: absolute;
   right: 8%;
-  bottom: 340px;
+  bottom: 400px;
   width: clamp(200px, 28vw, 400px);
   z-index: 20;
   pointer-events: none;
@@ -149,7 +149,7 @@
 .faq-postcard-3 {
   flex-shrink: 0;
   width: clamp(200px, 28vw, 400px);
-  padding-top: 20px;
+  padding-top: 200px;
 }
 
 .faq-postcards-wrapper {
