@@ -97,13 +97,11 @@ function FlipCard({ question, answer }) {
 }
 
 function FlipPostcard({ front, back }) {
-  const [clickOffset, setClickOffset] = useState(0)
   const [rotation, setRotation] = useState(0)
   const cardRef = useRef(null)
   const lastScrollY = useRef(0)
   const velocityRef = useRef(0)
   const animFrameRef = useRef(null)
-  const isAnimating = useRef(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -136,24 +134,19 @@ function FlipPostcard({ front, back }) {
     }
   }, [])
 
-  const handleClick = () => {
-    setClickOffset(prev => prev + 180)
-  }
-
   const normalizedRotation = rotation % 360
   const isBack = Math.abs(normalizedRotation % 360) > 90 && Math.abs(normalizedRotation % 360) < 270
 
   return (
     <div
       ref={cardRef}
-      onClick={handleClick}
-      style={{ width: '80%', maxWidth: '340px', aspectRatio: '3/4', perspective: '1000px', margin: '0 auto', cursor: 'pointer' }}
+      style={{ width: '80%', maxWidth: '340px', aspectRatio: '3/4', perspective: '1000px', margin: '0 auto' }}
     >
       <div style={{
         width: '100%', height: '100%', position: 'relative',
         transformStyle: 'preserve-3d',
-        transform: `rotateY(${rotation + clickOffset}deg)`,
-        transition: 'transform 0.6s ease'
+        transform: `rotateY(${rotation}deg)`,
+        transition: 'none'
       }}>
         <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: '12px', overflow: 'hidden' }}>
           <img src={front} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
