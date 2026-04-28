@@ -97,6 +97,7 @@ function FlipCard({ question, answer }) {
 }
 
 function FlipPostcard({ front, back }) {
+  const [clicked, setClicked] = useState(false)
   const [rotation, setRotation] = useState(0)
   const cardRef = useRef(null)
   const lastScrollY = useRef(0)
@@ -120,7 +121,7 @@ function FlipPostcard({ front, back }) {
     const animate = () => {
       if (Math.abs(velocityRef.current) > 0.1) {
         setRotation(prev => prev + velocityRef.current)
-        velocityRef.current *= 0.99
+        velocityRef.current *= 0.95
       }
       animFrameRef.current = requestAnimationFrame(animate)
     }
@@ -138,18 +139,22 @@ function FlipPostcard({ front, back }) {
   const isBack = Math.abs(normalizedRotation % 360) > 90 && Math.abs(normalizedRotation % 360) < 270
 
   return (
-    <div ref={cardRef} style={{ width: '80%', maxWidth: '340px', aspectRatio: '3/4', perspective: '1000px', margin: '0 auto' }}>
+    <div
+      ref={cardRef}
+      onClick={() => setClicked(!clicked)}
+      style={{ width: '80%', maxWidth: '340px', aspectRatio: '3/4', perspective: '1000px', margin: '0 auto', cursor: 'pointer' }}
+    >
       <div style={{
         width: '100%', height: '100%', position: 'relative',
         transformStyle: 'preserve-3d',
-        transform: `rotateY(${rotation}deg)`,
+        transform: `rotateY(${rotation + (clicked ? 180 : 0)}deg)`,
         transition: 'none'
       }}>
         <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: '12px', overflow: 'hidden' }}>
           <img src={front} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: '12px', overflow: 'hidden', transform: 'rotateY(180deg)' }}>
-          <img src={back} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={back} alt="" style={{ width: '100%', height: '100%', objectFnit: 'cover' }} />
         </div>
       </div>
     </div>
