@@ -336,7 +336,7 @@ function MobileApp() {
       {/* SHOOT YOUR SHOT SECTION */}
 <div style={{ position: 'relative', backgroundColor: '#0f132a', overflow: 'visible' }}>
   <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${shootYourShotBg})`, backgroundSize: 'cover', backgroundPosition: 'center top', opacity: 0.6, zIndex: 0 }} />
-  <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '110%', pointerEvents: 'none', zIndex: 25 }} />
+  <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '150%', pointerEvents: 'none', zIndex: 25 }} />
   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%)', pointerEvents: 'none', zIndex: 1 }} />
   <div style={{ position: 'relative', zIndex: 10, padding: '60px 20px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
