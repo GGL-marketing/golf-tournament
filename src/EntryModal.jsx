@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import Stepper, { Step } from './Stepper'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
 const getDivision = (handicap) => {
   const h = parseInt(handicap)
@@ -7,6 +11,74 @@ const getDivision = (handicap) => {
   if (h >= 10 && h <= 17) return 'Division 2'
   if (h >= 18 && h <= 27) return 'Division 3'
   return null
+}
+
+const getAmount = (division) => {
+  if (division === 'Division 1') return 3000
+  if (division === 'Division 2') return 2000
+  return 50
+}
+
+function CheckoutForm({ form, division, onClose }) {
+  const stripe = useStripe()
+  const elements = useElements()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!stripe || !elements) return
+
+    setLoading(true)
+    setError(null)
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}?payment=success`,
+        payment_method_data: {
+          billing_details: {
+            name: form.full_name,
+            email: form.email,
+          }
+        }
+      },
+    })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <PaymentElement />
+      {error && <p style={{ color: '#ff6b6b', fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', marginTop: '12px' }}>{error}</p>}
+      <button
+        type="submit"
+        disabled={!stripe || loading}
+        style={{
+          width: '100%',
+          marginTop: '24px',
+          padding: '16px',
+          backgroundColor: '#d5af4c',
+          color: '#0f132a',
+          border: 'none',
+          borderRadius: '8px',
+          fontFamily: 'Orbitron, sans-serif',
+          fontSize: '1rem',
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          opacity: loading ? 0.7 : 1,
+        }}
+      >
+        {loading ? 'Processing...' : `Pay ${division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R50'}`}
+      </button>
+    </form>
+  )
 }
 
 export default function EntryModal({ onClose }) {
@@ -17,11 +89,39 @@ export default function EntryModal({ onClose }) {
     home_club_name: '',
     home_club_email: '',
   })
+  const [clientSecret, setClientSecret] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const division = form.handicap !== '' ? getDivision(form.handicap) : null
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleFinalStep = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: getAmount(division),
+          metadata: {
+            full_name: form.full_name,
+            email: form.email,
+            handicap: form.handicap,
+            division: division,
+            home_club_name: form.home_club_name,
+            home_club_email: form.home_club_email,
+          }
+        })
+      })
+      const data = await response.json()
+      setClientSecret(data.clientSecret)
+    } catch (err) {
+      console.error(err)
+    }
+    setLoading(false)
   }
 
   const inputStyle = {
@@ -62,103 +162,104 @@ export default function EntryModal({ onClose }) {
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div style={{ backgroundColor: '#0f132a', border: '1px solid #d5af4c', borderRadius: '16px', width: '100%', maxWidth: '580px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
 
-        {/* Close button */}
         <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#ffffff', fontSize: '1.5rem', cursor: 'pointer', zIndex: 10 }}>✕</button>
 
-        {/* Title */}
         <div style={{ textAlign: 'center', padding: '40px 40px 0' }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '1rem', color: '#ffffff', margin: '0 0 8px', opacity: 0.7 }}>GGL New Era Tournament</p>
           <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.3rem, 3vw, 2rem)', fontWeight: 900, color: '#ffffff', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Claim Your Spot</h2>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', margin: '16px auto 0', maxWidth: '200px' }} />
         </div>
 
-        {/* Stepper */}
-        <Stepper
-          initialStep={1}
-          backButtonText="Back"
-          nextButtonText="Next"
-          onFinalStepCompleted={() => alert('Form submitted!')}
-          disableStepIndicators={false}
-        >
+        {clientSecret ? (
+          <div style={{ padding: '40px' }}>
+            <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#d5af4c', colorBackground: '#0f132a', colorText: '#ffffff' } } }}>
+              <CheckoutForm form={form} division={division} onClose={onClose} />
+            </Elements>
+          </div>
+        ) : (
+          <Stepper
+            initialStep={1}
+            backButtonText="Back"
+            nextButtonText="Next"
+            onFinalStepCompleted={handleFinalStep}
+            disableStepIndicators={false}
+          >
+            <Step>
+              <p style={headingStyle}>Personal Details</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <label style={labelStyle}>Full Name</label>
+                  <input name="full_name" value={form.full_name} onChange={handleChange} placeholder="John Smith" style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Email</label>
+                  <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="john@example.com" style={inputStyle} />
+                </div>
+              </div>
+            </Step>
 
-          {/* Step 1 — Personal Details */}
-          <Step>
-            <p style={headingStyle}>Personal Details</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <label style={labelStyle}>Full Name</label>
-                <input name="full_name" value={form.full_name} onChange={handleChange} placeholder="John Smith" style={inputStyle} />
+            <Step>
+              <p style={headingStyle}>Golf Details</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <label style={labelStyle}>Handicap</label>
+                  <input name="handicap" type="number" min="0" max="27" value={form.handicap} onChange={handleChange} placeholder="0 – 27" style={inputStyle} />
+                  {division && (
+                    <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#d5af4c', margin: '8px 0 0', letterSpacing: '0.1em' }}>→ {division}</p>
+                  )}
+                  {form.handicap !== '' && !division && (
+                    <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#ff6b6b', margin: '8px 0 0' }}>Handicap must be between 0 and 27</p>
+                  )}
+                </div>
+                <div>
+                  <label style={labelStyle}>Home Club Name</label>
+                  <input name="home_club_name" value={form.home_club_name} onChange={handleChange} placeholder="Rondebosch Golf Club" style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Home Club Contact Email</label>
+                  <input name="home_club_email" type="email" value={form.home_club_email} onChange={handleChange} placeholder="secretary@club.co.za" style={inputStyle} />
+                  <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', margin: '8px 0 0', lineHeight: 1.5 }}>
+                    We contact your home club to verify your official handicap and ensure fair play across all divisions.
+                  </p>
+                </div>
               </div>
-              <div>
-                <label style={labelStyle}>Email</label>
-                <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="john@example.com" style={inputStyle} />
-              </div>
-            </div>
-          </Step>
+            </Step>
 
-          {/* Step 2 — Golf Details */}
-          <Step>
-            <p style={headingStyle}>Golf Details</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <label style={labelStyle}>Handicap</label>
-                <input name="handicap" type="number" min="0" max="27" value={form.handicap} onChange={handleChange} placeholder="0 – 27" style={inputStyle} />
-                {division && (
-                  <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#d5af4c', margin: '8px 0 0', letterSpacing: '0.1em' }}>→ {division}</p>
-                )}
-                {form.handicap !== '' && !division && (
-                  <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#ff6b6b', margin: '8px 0 0' }}>Handicap must be between 0 and 27</p>
-                )}
+            <Step>
+              <p style={headingStyle}>Review & Pay</p>
+              <div style={{ backgroundColor: 'rgba(213,175,76,0.05)', border: '1px solid rgba(213,175,76,0.2)', borderRadius: '10px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Name</span>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{form.full_name}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Email</span>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{form.email}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Handicap</span>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{form.handicap}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Division</span>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{division}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Home Club</span>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{form.home_club_name}</span>
+                </div>
+                <div style={{ height: '1px', backgroundColor: 'rgba(213,175,76,0.2)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700 }}>Entry Fee</span>
+                  <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: '#ffffff', fontWeight: 700 }}>
+                    {division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R50'}
+                  </span>
+                </div>
               </div>
-              <div>
-                <label style={labelStyle}>Home Club Name</label>
-                <input name="home_club_name" value={form.home_club_name} onChange={handleChange} placeholder="Rondebosch Golf Club" style={inputStyle} />
-              </div>
-              <div>
-                <label style={labelStyle}>Home Club Contact Email</label>
-                <input name="home_club_email" type="email" value={form.home_club_email} onChange={handleChange} placeholder="secretary@club.co.za" style={inputStyle} />
-                <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', margin: '8px 0 0', lineHeight: 1.5 }}>
-                  We contact your home club to verify your official handicap and ensure fair play across all divisions.
-                </p>
-              </div>
-            </div>
-          </Step>
-
-          {/* Step 3 — Review */}
-          <Step>
-            <p style={headingStyle}>Review & Pay</p>
-            <div style={{ backgroundColor: 'rgba(213,175,76,0.05)', border: '1px solid rgba(213,175,76,0.2)', borderRadius: '10px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Name</span>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{form.full_name}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Email</span>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{form.email}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Handicap</span>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{form.handicap}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Division</span>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{division}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Home Club</span>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', color: '#ffffff' }}>{form.home_club_name}</span>
-              </div>
-              <div style={{ height: '1px', backgroundColor: 'rgba(213,175,76,0.2)' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700 }}>Entry Fee</span>
-                <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: '#ffffff', fontWeight: 700 }}>
-                  {division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R1,000'}
-                </span>
-              </div>
-            </div>
-          </Step>
-
-        </Stepper>
+              {loading && <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#d5af4c', textAlign: 'center', marginTop: '16px' }}>Setting up payment...</p>}
+            </Step>
+          </Stepper>
+        )}
       </div>
     </div>
   )
