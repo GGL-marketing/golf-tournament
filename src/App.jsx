@@ -60,7 +60,26 @@ function App() {
   return () => observer.disconnect()
 }, [])
 
+const [paymentSuccess, setPaymentSuccess] = useState(false)
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('payment') === 'success') {
+    setPaymentSuccess(true)
+  }
+}, [])
+
   if (isMobile) return <MobileApp />
+
+  if (paymentSuccess) return (
+  <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0f132a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px' }}>
+    <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2rem, 6vw, 4rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.15em', textTransform: 'uppercase', margin: '0 0 24px' }}>Payment Successful!</h1>
+    <div style={{ height: '1px', backgroundColor: '#d5af4c', width: '200px', margin: '0 auto 24px' }} />
+    <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 3vw, 1.5rem)', color: '#ffffff', margin: '0 0 16px', lineHeight: 1.6 }}>Well done on entering the GGL Tournament.</p>
+    <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 3vw, 1.5rem)', color: '#ffffff', margin: '0 0 40px', lineHeight: 1.6 }}>Stay connected with us on social media and we'll be in touch via email with all your tournament details and updates.</p>
+    <button onClick={() => window.location.href = '/'} style={{ padding: '16px 40px', backgroundColor: '#d5af4c', color: '#0f132a', border: 'none', borderRadius: '8px', fontFamily: 'Orbitron, sans-serif', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}>Back to Home</button>
+  </div>
+)
 
   return (
     <div>
