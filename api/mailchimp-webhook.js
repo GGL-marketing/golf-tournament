@@ -32,7 +32,6 @@ export default async function handler(req, res) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Add member to Mailchimp
     const memberData = {
       email_address: email,
       status: 'subscribed',
@@ -41,6 +40,7 @@ export default async function handler(req, res) {
         LNAME: lastName,
         HANDICAP: handicap || '',
         HOMECLUB: home_club_name || '',
+        DIVISION: division || '',
       },
       tags: [division, 'GGL 2025'].filter(Boolean)
     }
@@ -63,7 +63,6 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: mcResult.detail })
     }
 
-    // If member already exists, update their tags
     if (mcResult.title === 'Member Exists') {
       const emailHash = Buffer.from(email.toLowerCase()).toString('hex')
       await fetch(
