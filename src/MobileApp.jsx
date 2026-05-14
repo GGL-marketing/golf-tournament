@@ -314,7 +314,7 @@ function MobileApp() {
           <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2.5rem, 12vw, 5rem)', fontWeight: 900, color: '#0f132a', letterSpacing: '0.2em', margin: '0 0 8px', textTransform: 'uppercase', textAlign: 'center' }}>PRIZES</h1>
           <div style={{ height: '2px', backgroundColor: '#d5af4c', width: '80%', maxWidth: '300px', marginBottom: '24px' }} />
 
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Note: you must have an official handicap to enter</p>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.75rem', fontWeight: 700, color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center', alignSelf: 'center' }}>Note: you must have an official handicap to enter</p>
 
           {/* Accordion Divisions */}
           <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '12px' }}>

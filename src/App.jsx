@@ -146,7 +146,7 @@ useEffect(() => {
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.2rem, 3vw, 2rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.3em' }}>PRIZES</span>
           </div>
 
-           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Note: you must have an official handicap to enter</p>
+           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '1.3rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Note: you must have an official handicap to enter</p>
 
           <MagicBento textAutoHide={false} enableStars={true} enableSpotlight={true} enableBorderGlow={true} enableTilt={true} enableMagnetism={true} clickEffect={true} spotlightRadius={200} particleCount={10} glowColor="213, 175, 76" />
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 2vw, 1.3rem)', color: '#ffffff', marginTop: '40px', opacity: 0.9, textAlign: 'center', letterSpacing: '0.05em' }}>
