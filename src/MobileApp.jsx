@@ -325,7 +325,6 @@ function MobileApp() {
                   style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
                   <div style={{ textAlign: 'left' }}>
-                    <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', fontWeight: 700, color: 'rgba(213,175,76,0.8)', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 4px' }}>{div.label}</p>
                     <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', letterSpacing: '0.05em', margin: 0 }}>{div.division}</p>
                   </div>
                   <span style={{ color: '#d5af4c', fontSize: '1.5rem', fontWeight: 300 }}>{openDivision === index ? '−' : '+'}</span>
