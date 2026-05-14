@@ -394,9 +394,7 @@ const MagicBento = ({
 
           const cardContent = (
             <>
-              <div className="magic-bento-card__header">
-                <div className="magic-bento-card__label">{card.label}</div>
-              </div>
+              
               <div className="magic-bento-card__content">
                 <h2 className="magic-bento-card__title">{card.division}</h2>
                 <div className="handicap-badge">{card.handicap}</div>

@@ -335,7 +335,7 @@ if (paymentSuccess) return (
         {/* 2 Million Rand — top of image, same size as Shoot Your Shot heading */}
         <div style={{ position: 'absolute', bottom: '120px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: '90%', maxWidth: '360px', textAlign: 'center' }}>
           <div style={{ backgroundColor: 'rgba(15, 19, 42, 0.85)', border: '2px solid #d5af4c', borderRadius: '12px', padding: '16px 28px' }}>
-            <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>2 Million Rand</span>
+            <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>500K Rand</span>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', color: '#ffffff', letterSpacing: '0.02em', display: 'block' }}>hole-in-1</span>
           </div>
         </div>
@@ -347,7 +347,7 @@ if (paymentSuccess) return (
 
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(15, 19, 42, 0.92)', borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '14px 20px', textAlign: 'center', zIndex: 10 }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', letterSpacing: '0.05em', margin: 0, opacity: 0.9 }}>
-            Two chances at 2 Million Rand. Hole in one, Par 4. T's and C's apply.
+            Get a hole in one on par 3 on the Friday and win 500K Rand! T's and C's apply.T's and C's apply.
           </p>
         </div>
       </section>
