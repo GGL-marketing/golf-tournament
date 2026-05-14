@@ -44,12 +44,14 @@ export default function Stepper({
 
   const handleNext = () => {
     if (!isLastStep) {
+      if (rest.onNextStep && !rest.onNextStep(currentStep)) return;
       setDirection(1);
       updateStep(currentStep + 1);
     }
   };
 
   const handleComplete = () => {
+    if (rest.onNextStep && !rest.onNextStep(currentStep)) return;
     setDirection(1);
     updateStep(totalSteps + 1);
   };

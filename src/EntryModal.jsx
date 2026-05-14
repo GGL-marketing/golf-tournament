@@ -90,9 +90,28 @@ export default function EntryModal({ onClose }) {
     home_club_email: '',
   })
   const [clientSecret, setClientSecret] = useState(null)
-  const [loading, setLoading] = useState(false)
+ const [loading, setLoading] = useState(false)
+const [errors, setErrors] = useState({})
 
-  const division = form.handicap !== '' ? getDivision(form.handicap) : null
+const division = form.handicap !== '' ? getDivision(form.handicap) : null
+
+const validateStep1 = () => {
+  const e = {}
+  if (!form.full_name.trim()) e.full_name = 'Required'
+  if (!form.email.trim()) e.email = 'Required'
+  setErrors(e)
+  return Object.keys(e).length === 0
+}
+
+const validateStep2 = () => {
+  const e = {}
+  if (form.handicap === '') e.handicap = 'Required'
+  if (!division) e.handicap = 'Must be between 0 and 27'
+  if (!form.home_club_name.trim()) e.home_club_name = 'Required'
+  if (!form.home_club_email.trim()) e.home_club_email = 'Required'
+  setErrors(e)
+  return Object.keys(e).length === 0
+}
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -178,52 +197,62 @@ export default function EntryModal({ onClose }) {
           </div>
         ) : (
           <Stepper
-            initialStep={1}
-            backButtonText="Back"
-            nextButtonText="Next"
-            onFinalStepCompleted={handleFinalStep}
-            disableStepIndicators={false}
-          >
+  initialStep={1}
+  backButtonText="Back"
+  nextButtonText="Next"
+  onFinalStepCompleted={handleFinalStep}
+  disableStepIndicators={false}
+  onNextStep={(currentStep) => {
+    if (currentStep === 1) return validateStep1()
+    if (currentStep === 2) return validateStep2()
+    return true
+  }}
+>
             <Step>
               <p style={headingStyle}>Personal Details</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
                   <label style={labelStyle}>Full Name</label>
-                  <input name="full_name" value={form.full_name} onChange={handleChange} placeholder="John Smith" style={inputStyle} required />
+                  <input name="full_name" value={form.full_name} onChange={handleChange} placeholder="John Smith" style={inputStyle} />
+{errors.full_name && <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: '#ff6b6b', margin: '6px 0 0' }}>{errors.full_name}</p>}
                 </div>
                 <div>
                   <label style={labelStyle}>Email</label>
-                  <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="john@example.com" style={inputStyle} required />
+                  <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="john@example.com" style={inputStyle} />
+{errors.email && <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: '#ff6b6b', margin: '6px 0 0' }}>{errors.email}</p>}
                 </div>
               </div>
             </Step>
 
-            <Step>
-              <p style={headingStyle}>Golf Details</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <label style={labelStyle}>Handicap</label>
-                  <input name="handicap" type="number" min="0" max="27" value={form.handicap} onChange={handleChange} placeholder="0 – 27" style={inputStyle} required />
-                  {division && (
-                    <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#d5af4c', margin: '8px 0 0', letterSpacing: '0.1em' }}>→ {division}</p>
-                  )}
-                  {form.handicap !== '' && !division && (
-                    <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#ff6b6b', margin: '8px 0 0' }}>Handicap must be between 0 and 27</p>
-                  )}
-                </div>
-                <div>
-                  <label style={labelStyle}>Home Club Name</label>
-                  <input name="home_club_name" value={form.home_club_name} onChange={handleChange} placeholder="Rondebosch Golf Club" style={inputStyle} required />
-                </div>
-                <div>
-                  <label style={labelStyle}>Home Club Contact Email</label>
-                  <input name="home_club_email" type="email" value={form.home_club_email} onChange={handleChange} placeholder="secretary@club.co.za" style={inputStyle} />
-                  <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', margin: '8px 0 0', lineHeight: 1.5 }}>
-                    We contact your home club to verify your official handicap and ensure fair play across all divisions.
-                  </p>
-                </div>
-              </div>
-            </Step>
+          <Step>
+  <p style={headingStyle}>Golf Details</p>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div>
+      <label style={labelStyle}>Handicap</label>
+      <input name="handicap" type="number" min="0" max="27" value={form.handicap} onChange={handleChange} placeholder="0 – 27" style={inputStyle} />
+      {division && (
+        <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#d5af4c', margin: '8px 0 0', letterSpacing: '0.1em' }}>→ {division}</p>
+      )}
+      {form.handicap !== '' && !division && (
+        <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#ff6b6b', margin: '8px 0 0' }}>Handicap must be between 0 and 27</p>
+      )}
+      {errors.handicap && <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: '#ff6b6b', margin: '6px 0 0' }}>{errors.handicap}</p>}
+    </div>
+    <div>
+      <label style={labelStyle}>Home Club Name</label>
+      <input name="home_club_name" value={form.home_club_name} onChange={handleChange} placeholder="Rondebosch Golf Club" style={inputStyle} />
+      {errors.home_club_name && <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: '#ff6b6b', margin: '6px 0 0' }}>{errors.home_club_name}</p>}
+    </div>
+    <div>
+      <label style={labelStyle}>Home Club Contact Email</label>
+      <input name="home_club_email" type="email" value={form.home_club_email} onChange={handleChange} placeholder="secretary@club.co.za" style={inputStyle} />
+      {errors.home_club_email && <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: '#ff6b6b', margin: '6px 0 0' }}>{errors.home_club_email}</p>}
+      <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', margin: '8px 0 0', lineHeight: 1.5 }}>
+        We contact your home club to verify your official handicap and ensure fair play across all divisions.
+      </p>
+    </div>
+  </div>
+</Step>
 
             <Step>
               <p style={headingStyle}>Review & Pay</p>
