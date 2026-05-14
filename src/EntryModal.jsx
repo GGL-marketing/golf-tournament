@@ -189,11 +189,11 @@ export default function EntryModal({ onClose }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
                   <label style={labelStyle}>Full Name</label>
-                  <input name="full_name" value={form.full_name} onChange={handleChange} placeholder="John Smith" style={inputStyle} />
+                  <input name="full_name" value={form.full_name} onChange={handleChange} placeholder="John Smith" style={inputStyle} required />
                 </div>
                 <div>
                   <label style={labelStyle}>Email</label>
-                  <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="john@example.com" style={inputStyle} />
+                  <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="john@example.com" style={inputStyle} required />
                 </div>
               </div>
             </Step>
@@ -203,7 +203,7 @@ export default function EntryModal({ onClose }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
                   <label style={labelStyle}>Handicap</label>
-                  <input name="handicap" type="number" min="0" max="27" value={form.handicap} onChange={handleChange} placeholder="0 – 27" style={inputStyle} />
+                  <input name="handicap" type="number" min="0" max="27" value={form.handicap} onChange={handleChange} placeholder="0 – 27" style={inputStyle} required />
                   {division && (
                     <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#d5af4c', margin: '8px 0 0', letterSpacing: '0.1em' }}>→ {division}</p>
                   )}
@@ -213,7 +213,7 @@ export default function EntryModal({ onClose }) {
                 </div>
                 <div>
                   <label style={labelStyle}>Home Club Name</label>
-                  <input name="home_club_name" value={form.home_club_name} onChange={handleChange} placeholder="Rondebosch Golf Club" style={inputStyle} />
+                  <input name="home_club_name" value={form.home_club_name} onChange={handleChange} placeholder="Rondebosch Golf Club" style={inputStyle} required />
                 </div>
                 <div>
                   <label style={labelStyle}>Home Club Contact Email</label>
