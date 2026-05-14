@@ -63,6 +63,38 @@ const faqItems = [
   },
 ]
 
+function FadingText({ texts }) {
+  const [index, setIndex] = useState(0)
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => {
+        setIndex(prev => (prev + 1) % texts.length)
+        setVisible(true)
+      }, 800)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [texts.length])
+
+  return (
+    <p style={{
+      fontFamily: "'The Foriene Serif', serif",
+      fontStyle: 'italic',
+      fontSize: 'clamp(1rem, 4vw, 1.3rem)',
+      color: '#ffffff',
+      margin: 0,
+      lineHeight: 1.6,
+      letterSpacing: '0.05em',
+      opacity: visible ? 1 : 0,
+      transition: 'opacity 0.8s ease'
+    }}>
+      {texts[index]}
+    </p>
+  )
+}
+
 function FlipCard({ question, answer }) {
   const [flipped, setFlipped] = useState(false)
   return (
@@ -286,7 +318,7 @@ if (paymentSuccess) return (
           <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2.5rem, 12vw, 5rem)', fontWeight: 900, color: '#0f132a', letterSpacing: '0.2em', margin: '0 0 8px', textTransform: 'uppercase', textAlign: 'center' }}>PRIZES</h1>
           <div style={{ height: '2px', backgroundColor: '#d5af4c', width: '80%', maxWidth: '300px', marginBottom: '24px' }} />
 
-          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Tap a division to expand</p>
+          <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Note: you must have an official handicap to enter</p>
 
           {/* Accordion Divisions */}
           <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -317,14 +349,15 @@ if (paymentSuccess) return (
             ))}
           </div>
 
-          {/* Top 10 band */}
-          <div style={{ width: '100%', backgroundColor: 'rgba(15,19,42,0.95)', border: '1px solid #d5af4c', borderRadius: '12px', padding: '20px', marginTop: '32px', textAlign: 'center' }}>
-            <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', margin: 0, lineHeight: 1.6, letterSpacing: '0.05em' }}>
-              Top 10 players are awarded 50% off their next tournament entry
-            </p>
-          </div>
-        </div>
-      </section>
+ {/* Top 10 band */}
+<div style={{ width: '100%', backgroundColor: 'rgba(15,19,42,0.95)', border: '1px solid #d5af4c', borderRadius: '12px', padding: '20px', marginTop: '32px', textAlign: 'center', minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+  <FadingText
+    texts={[
+      'Top 10 players are awarded 50% off their next tournament entry',
+      'Top 3 players in each division get 50% off their membership fee.'
+    ]}
+  />
+</div>
 
       {/* HOLE IN ONE SECTION */}
       <section ref={holeInOneRef} style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#0f132a', height: '600px' }}>

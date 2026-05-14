@@ -145,9 +145,12 @@ useEffect(() => {
           <div style={{ display: 'inline-block', border: '2px solid #d5af4c', borderRadius: '50px', padding: '10px 40px', marginBottom: '48px', backgroundColor: 'rgba(15, 19, 42, 0.85)' }}>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.2rem, 3vw, 2rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.3em' }}>PRIZES</span>
           </div>
+
+           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: '0.9rem', color: '#0f132a', backgroundColor: '#d5af4c', padding: '4px 16px', borderRadius: '20px', margin: '0 0 24px', letterSpacing: '0.05em' }}>Note: you must have an official handicap to enter</p>
+
           <MagicBento textAutoHide={false} enableStars={true} enableSpotlight={true} enableBorderGlow={true} enableTilt={true} enableMagnetism={true} clickEffect={true} spotlightRadius={200} particleCount={10} glowColor="213, 175, 76" />
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 2vw, 1.3rem)', color: '#ffffff', marginTop: '40px', opacity: 0.9, textAlign: 'center', letterSpacing: '0.05em' }}>
-            Top 10 players are awarded 50% off their next tournament entry
+            Top 10 players are awarded 50% off their next tournament entry & The top 3 players in each division get 50% off their membership fee.
           </p>
         </div>
       </section>
