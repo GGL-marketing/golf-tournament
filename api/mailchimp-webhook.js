@@ -1,4 +1,11 @@
 import Stripe from 'stripe'
+import { buffer } from 'micro'
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,11 +18,12 @@ export default async function handler(req, res) {
 
   const sig = req.headers['stripe-signature']
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  const rawBody = await buffer(req)
 
   let event
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret)
+    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret)
   } catch (err) {
     return res.status(400).json({ error: `Webhook error: ${err.message}` })
   }
