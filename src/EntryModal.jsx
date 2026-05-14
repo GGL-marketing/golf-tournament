@@ -108,7 +108,6 @@ const validateStep2 = () => {
   if (form.handicap === '') e.handicap = 'Required'
   if (!division) e.handicap = 'Must be between 0 and 27'
   if (!form.home_club_name.trim()) e.home_club_name = 'Required'
-  if (!form.home_club_email.trim()) e.home_club_email = 'Required'
   setErrors(e)
   return Object.keys(e).length === 0
 }
