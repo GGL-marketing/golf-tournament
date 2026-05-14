@@ -109,10 +109,10 @@ function FlipCard({ question, answer }) {
         <div style={{
           position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
           backgroundColor: 'rgba(15,19,42,0.9)', border: '1px solid rgba(213,175,76,0.4)',
-          borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+          borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', flexDirection: 'column'
         }}>
           <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(0.9rem, 3.5vw, 1.1rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'center', margin: '0 0 8px' }}>{question}</p>
-<p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: 'rgba(213,175,76,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'center', margin: 0 }}>Tap to reveal answer</p>
+          <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.7rem', color: 'rgba(213,175,76,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'center', margin: 0 }}>Tap to reveal answer</p>
         </div>
         {/* Back */}
         <div style={{
@@ -165,9 +165,6 @@ function FlipPostcard({ front, back }) {
       cancelAnimationFrame(animFrameRef.current)
     }
   }, [])
-
-  const normalizedRotation = rotation % 360
-  const isBack = Math.abs(normalizedRotation % 360) > 90 && Math.abs(normalizedRotation % 360) < 270
 
   return (
     <div
@@ -235,22 +232,22 @@ function MobileApp() {
 
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search)
-  if (params.get('payment') === 'success') {
-    setPaymentSuccess(true)
-  }
-}, [])
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('payment') === 'success') {
+      setPaymentSuccess(true)
+    }
+  }, [])
 
-if (paymentSuccess) return (
-  <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0f132a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px' }}>
-    <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 8vw, 3rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.15em', textTransform: 'uppercase', margin: '0 0 24px' }}>Payment Successful!</h1>
-    <div style={{ height: '1px', backgroundColor: '#d5af4c', width: '200px', margin: '0 auto 24px' }} />
-    <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', margin: '0 0 16px', lineHeight: 1.6 }}>Well done on entering the GGL Tournament.</p>
-    <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', margin: '0 0 40px', lineHeight: 1.6 }}>Stay connected with us on social media and we'll be in touch via email with all your tournament details and updates.</p>
-    <button onClick={() => window.location.href = '/'} style={{ padding: '16px 40px', backgroundColor: '#d5af4c', color: '#0f132a', border: 'none', borderRadius: '8px', fontFamily: 'Orbitron, sans-serif', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}>Back to Home</button>
-  </div>
-)
+  if (paymentSuccess) return (
+    <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0f132a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px' }}>
+      <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 8vw, 3rem)', fontWeight: 900, color: '#d5af4c', letterSpacing: '0.15em', textTransform: 'uppercase', margin: '0 0 24px' }}>Payment Successful!</h1>
+      <div style={{ height: '1px', backgroundColor: '#d5af4c', width: '200px', margin: '0 auto 24px' }} />
+      <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', margin: '0 0 16px', lineHeight: 1.6 }}>Well done on entering the GGL Tournament.</p>
+      <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', margin: '0 0 40px', lineHeight: 1.6 }}>Stay connected with us on social media and we'll be in touch via email with all your tournament details and updates.</p>
+      <button onClick={() => window.location.href = '/'} style={{ padding: '16px 40px', backgroundColor: '#d5af4c', color: '#0f132a', border: 'none', borderRadius: '8px', fontFamily: 'Orbitron, sans-serif', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}>Back to Home</button>
+    </div>
+  )
 
   return (
     <div>
@@ -314,7 +311,6 @@ if (paymentSuccess) return (
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 8%, transparent 92%, #0f132a 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px 40px' }}>
 
-          {/* PRIZES heading — big and prominent */}
           <h1 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(2.5rem, 12vw, 5rem)', fontWeight: 900, color: '#0f132a', letterSpacing: '0.2em', margin: '0 0 8px', textTransform: 'uppercase', textAlign: 'center' }}>PRIZES</h1>
           <div style={{ height: '2px', backgroundColor: '#d5af4c', width: '80%', maxWidth: '300px', marginBottom: '24px' }} />
 
@@ -349,15 +345,19 @@ if (paymentSuccess) return (
             ))}
           </div>
 
- {/* Top 10 band */}
-<div style={{ width: '100%', backgroundColor: 'rgba(15,19,42,0.95)', border: '1px solid #d5af4c', borderRadius: '12px', padding: '20px', marginTop: '32px', textAlign: 'center', minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-  <FadingText
-    texts={[
-      'Top 10 players are awarded 50% off their next tournament entry',
-      'Top 3 players in each division get 50% off their membership fee.'
-    ]}
-  />
-</div>
+          {/* Top 10 band */}
+          <div style={{ width: '100%', backgroundColor: 'rgba(15,19,42,0.95)', border: '1px solid #d5af4c', borderRadius: '12px', padding: '20px', marginTop: '32px', textAlign: 'center', minHeight: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FadingText
+              texts={[
+                'Top 10 players are awarded 50% off their next tournament entry',
+                'Top 3 players in each division get 50% off their membership fee.'
+              ]}
+            />
+          </div>
+
+        </div>
+      </section>
+      {/* END PRIZES SECTION */}
 
       {/* HOLE IN ONE SECTION */}
       <section ref={holeInOneRef} style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#0f132a', height: '600px' }}>
@@ -365,7 +365,6 @@ if (paymentSuccess) return (
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(to bottom, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(to top, #0f132a 0%, transparent 100%)', pointerEvents: 'none' }} />
 
-        {/* 2 Million Rand — top of image, same size as Shoot Your Shot heading */}
         <div style={{ position: 'absolute', bottom: '120px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, width: '90%', maxWidth: '360px', textAlign: 'center' }}>
           <div style={{ backgroundColor: 'rgba(15, 19, 42, 0.85)', border: '2px solid #d5af4c', borderRadius: '12px', padding: '16px 28px' }}>
             <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>500K Rand</span>
@@ -373,28 +372,28 @@ if (paymentSuccess) return (
           </div>
         </div>
 
-        {/* Enter Now — centre */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
           <button className="mob-claim-btn mob-enter-btn" onClick={() => setShowModal(true)}>ENTER NOW</button>
         </div>
 
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(15, 19, 42, 0.92)', borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '14px 20px', textAlign: 'center', zIndex: 10 }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', letterSpacing: '0.05em', margin: 0, opacity: 0.9 }}>
-            Get a hole in one on par 3 on the Friday and win 500K Rand! T's and C's apply.T's and C's apply.
+            Get a hole in one on par 3 on the Friday and win 500K Rand! T's and C's apply.
           </p>
         </div>
       </section>
+      {/* END HOLE IN ONE SECTION */}
 
       {/* SHOOT YOUR SHOT SECTION */}
-<div style={{ position: 'relative', backgroundColor: '#0f132a', overflow: 'visible' }}>
-  <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${shootYourShotBg})`, backgroundSize: 'cover', backgroundPosition: 'center top', opacity: 0.6, zIndex: 0 }} />
-  <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '150%', pointerEvents: 'none', zIndex: 25 }} />
-  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%)', pointerEvents: 'none', zIndex: 1 }} />
-  <div style={{ position: 'relative', zIndex: 10, padding: '60px 20px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
-      <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
-      <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
-    </div>
+      <div style={{ position: 'relative', backgroundColor: '#0f132a', overflow: 'visible' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${shootYourShotBg})`, backgroundSize: 'cover', backgroundPosition: 'center top', opacity: 0.6, zIndex: 0 }} />
+        <img src={golfBalls} alt="" style={{ position: 'absolute', bottom: '-100px', left: 0, width: '150%', pointerEvents: 'none', zIndex: 25 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #0f132a 0%, transparent 10%)', pointerEvents: 'none', zIndex: 1 }} />
+        <div style={{ position: 'relative', zIndex: 10, padding: '60px 20px 120px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
+            <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+            <div style={{ height: '2px', backgroundColor: '#d5af4c' }} />
+          </div>
 
           <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: 'clamp(1.5rem, 7vw, 2.5rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '0.15em', margin: '0 0 12px', textTransform: 'uppercase', textAlign: 'center' }}>
             Shoot Your Shot
@@ -435,6 +434,7 @@ if (paymentSuccess) return (
 
         </div>
       </div>
+      {/* END SHOOT YOUR SHOT SECTION */}
 
       {/* FAQ SECTION */}
       <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#0f132a', padding: '120px 20px 40px', borderTop: '2px solid #d5af4c' }}>
@@ -457,6 +457,7 @@ if (paymentSuccess) return (
         <FlipPostcard front={postcardImage2} back={postcardImage3} />
 
       </section>
+      {/* END FAQ SECTION */}
 
       {/* FOOTER */}
       <footer style={{ backgroundColor: '#0a0d1f', borderTop: '1px solid #d5af4c', padding: '40px 20px' }}>
