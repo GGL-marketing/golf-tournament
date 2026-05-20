@@ -16,7 +16,7 @@ const getDivision = (handicap) => {
 const getAmount = (division) => {
   if (division === 'Division 1') return 3000
   if (division === 'Division 2') return 2000
-  return 50
+  return 1000
 }
 
 function CheckoutForm({ form, division, onClose }) {
@@ -75,7 +75,7 @@ function CheckoutForm({ form, division, onClose }) {
           opacity: loading ? 0.7 : 1,
         }}
       >
-        {loading ? 'Processing...' : `Pay ${division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R50'}`}
+        {loading ? 'Processing...' : `Pay ${division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R1,000'}`}
       </button>
     </form>
   )
