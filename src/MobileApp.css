@@ -1,3 +1,12 @@
+#root > div {
+  filter: saturate(1.15) brightness(1.05);
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 .mob-claim-btn {
   width: 280px;
   height: 60px;
