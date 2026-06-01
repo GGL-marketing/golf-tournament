@@ -1,5 +1,6 @@
 #root > div {
   filter: saturate(1.15) brightness(1.05);
+  overflow-x: hidden;
 }
 
 body {
