@@ -377,7 +377,7 @@ function MobileApp() {
 
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(15, 19, 42, 0.92)', borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '14px 20px', textAlign: 'center', zIndex: 10 }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 4vw, 1.3rem)', color: '#ffffff', letterSpacing: '0.05em', margin: 0, opacity: 0.9 }}>
-            Get a hole in one on par 3 on the Friday and win 250K Rand! T's and C's apply.
+            Two attempts at R250K — one on Thursday, one on Friday on the par 3! T's and C's apply.
           </p>
         </div>
       </section>
