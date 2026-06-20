@@ -66,6 +66,7 @@ useEffect(() => {
   const params = new URLSearchParams(window.location.search)
   if (params.get('payment') === 'success') {
     setPaymentSuccess(true)
+    if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: 0 })
   }
 }, [])
 
@@ -133,7 +134,7 @@ useEffect(() => {
             </span>
           </h2>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '600px', margin: '0 auto 40px' }} />
-          <button className="claim-btn" onClick={() => setShowModal(true)}>CLAIM MY SPOT</button>
+          <button className="claim-btn" onClick={() => { if(window.fbq) window.fbq('track', 'Lead'); setShowModal(true) }}>CLAIM MY SPOT</button>
         </div>
       </section>
 
@@ -167,7 +168,7 @@ useEffect(() => {
           </div>
         </div>
         <div style={{ position: 'absolute', bottom: '600px', left: '27%', zIndex: 10 }}>
-          <button className="claim-btn enter-btn" onClick={() => setShowModal(true)}>ENTER NOW</button>
+          <button className="claim-btn enter-btn" onClick={() => { if(window.fbq) window.fbq('track', 'Lead'); setShowModal(true) }}>ENTER NOW</button>
         </div>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(15, 19, 42, 0.92)', borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '18px 40px', textAlign: 'center', zIndex: 10 }}>
           <p style={{ fontFamily: "'The Foriene Serif', serif", fontStyle: 'italic', fontSize: 'clamp(1rem, 2vw, 1.3rem)', color: '#ffffff', letterSpacing: '0.05em', margin: 0, opacity: 0.9 }}>

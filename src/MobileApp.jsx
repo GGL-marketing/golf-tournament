@@ -233,11 +233,12 @@ function MobileApp() {
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('payment') === 'success') {
-      setPaymentSuccess(true)
-    }
-  }, [])
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('payment') === 'success') {
+    setPaymentSuccess(true)
+    if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: 0 })
+  }
+}, [])
 
   if (paymentSuccess) return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0f132a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px' }}>
@@ -301,7 +302,7 @@ function MobileApp() {
             Your Season<br />Starts Now.
           </h2>
           <div style={{ height: '1px', backgroundColor: '#d5af4c', maxWidth: '300px', margin: '0 auto 32px' }} />
-          <button className="mob-claim-btn" onClick={() => setShowModal(true)}>CLAIM MY SPOT</button>
+          <button className="mob-claim-btn" onClick={() => { if(window.fbq) window.fbq('track', 'Lead'); setShowModal(true) }}>CLAIM MY SPOT</button>
         </div>
       </section>
 
@@ -372,7 +373,7 @@ function MobileApp() {
         </div>
 
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
-          <button className="mob-claim-btn mob-enter-btn" onClick={() => setShowModal(true)}>ENTER NOW</button>
+          <button className="mob-claim-btn mob-enter-btn" onClick={() => { if(window.fbq) window.fbq('track', 'Lead'); setShowModal(true) }}>ENTER NOW</button>
         </div>
 
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(15, 19, 42, 0.92)', borderTop: '1px solid #d5af4c', borderBottom: '1px solid #d5af4c', padding: '14px 20px', textAlign: 'center', zIndex: 10 }}>

@@ -280,7 +280,7 @@ const validateStep2 = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700 }}>Entry Fee</span>
                   <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: '#ffffff', fontWeight: 700 }}>
-                    {division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R50'}
+                    {division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R1000'}
                   </span>
                 </div>
               </div>
