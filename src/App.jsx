@@ -66,7 +66,8 @@ useEffect(() => {
   const params = new URLSearchParams(window.location.search)
   if (params.get('payment') === 'success') {
     setPaymentSuccess(true)
-    if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: 0 })
+    const amount = params.get('amount') || 0
+if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: Number(amount) })
   }
 }, [])
 

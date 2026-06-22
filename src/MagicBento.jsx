@@ -346,7 +346,7 @@ const prizeCardData = [
   {
     label: 'Open Flight',
     division: 'Division 3',
-    handicap: 'Handicap 18 – 27',
+    handicap: 'Handicap 18 – 54',
     prizes: [
       { place: '1st', amount: 'R20K' },
       { place: '2nd', amount: 'R10K' },

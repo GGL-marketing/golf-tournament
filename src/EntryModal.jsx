@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Stepper, { Step } from './Stepper'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
@@ -9,7 +9,7 @@ const getDivision = (handicap) => {
   const h = parseInt(handicap)
   if (h >= 0 && h <= 9) return 'Division 1'
   if (h >= 10 && h <= 17) return 'Division 2'
-  if (h >= 18 && h <= 27) return 'Division 3'
+  if (h >= 18 && h <= 54) return 'Division 3'
   return null
 }
 
@@ -35,7 +35,7 @@ function CheckoutForm({ form, division, onClose }) {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}?payment=success`,
+        return_url: `${window.location.origin}?payment=success&amount=${getAmount(division)}`,
         payment_method_data: {
           billing_details: {
             name: form.full_name,
@@ -93,6 +93,21 @@ export default function EntryModal({ onClose }) {
  const [loading, setLoading] = useState(false)
 const [errors, setErrors] = useState({})
 
+useEffect(() => {
+  const scrollY = window.scrollY
+  document.body.style.overflow = 'hidden'
+  document.body.style.position = 'fixed'
+  document.body.style.top = `-${scrollY}px`
+  document.body.style.width = '100%'
+  return () => {
+    document.body.style.overflow = ''
+    document.body.style.position = ''
+    document.body.style.top = ''
+    document.body.style.width = ''
+    window.scrollTo(0, scrollY)
+  }
+}, [])
+
 const division = form.handicap !== '' ? getDivision(form.handicap) : null
 
 const validateStep1 = () => {
@@ -106,7 +121,7 @@ const validateStep1 = () => {
 const validateStep2 = () => {
   const e = {}
   if (form.handicap === '') e.handicap = 'Required'
-  if (!division) e.handicap = 'Must be between 0 and 27'
+  if (!division) e.handicap = 'Must be between 0 and 54'
   if (!form.home_club_name.trim()) e.home_club_name = 'Required'
   setErrors(e)
   return Object.keys(e).length === 0
@@ -228,7 +243,7 @@ const validateStep2 = () => {
   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
     <div>
       <label style={labelStyle}>Handicap</label>
-      <input name="handicap" type="number" min="0" max="27" value={form.handicap} onChange={handleChange} placeholder="0 – 27" style={inputStyle} />
+      <input name="handicap" type="number" min="0" max="54" value={form.handicap} onChange={handleChange} placeholder="0 – 54" style={inputStyle} />
       {division && (
         <p style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.8rem', color: '#d5af4c', margin: '8px 0 0', letterSpacing: '0.1em' }}>→ {division}</p>
       )}
@@ -280,7 +295,7 @@ const validateStep2 = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: '#d5af4c', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700 }}>Entry Fee</span>
                   <span style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '0.85rem', color: '#ffffff', fontWeight: 700 }}>
-                    {division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R1000'}
+                    {division === 'Division 1' ? 'R3,000' : division === 'Division 2' ? 'R2,000' : 'R1,000'}
                   </span>
                 </div>
               </div>

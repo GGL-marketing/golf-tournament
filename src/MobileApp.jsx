@@ -39,7 +39,7 @@ const divisions = [
   {
     label: 'Open Flight',
     division: 'Division 3',
-    handicap: 'Handicap 18 – 27',
+    handicap: 'Handicap 18 – 54',
     prizes: [
       { place: '1st', amount: 'R20K' },
       { place: '2nd', amount: 'R10K' },
@@ -236,7 +236,8 @@ function MobileApp() {
   const params = new URLSearchParams(window.location.search)
   if (params.get('payment') === 'success') {
     setPaymentSuccess(true)
-    if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: 0 })
+    const amount = params.get('amount') || 0
+if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: Number(amount) })
   }
 }, [])
 
