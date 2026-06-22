@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Stepper, { Step } from './Stepper'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
@@ -92,21 +92,6 @@ export default function EntryModal({ onClose }) {
   const [clientSecret, setClientSecret] = useState(null)
  const [loading, setLoading] = useState(false)
 const [errors, setErrors] = useState({})
-
-useEffect(() => {
-  const scrollY = window.scrollY
-  document.body.style.overflow = 'hidden'
-  document.body.style.position = 'fixed'
-  document.body.style.top = `-${scrollY}px`
-  document.body.style.width = '100%'
-  return () => {
-    document.body.style.overflow = ''
-    document.body.style.position = ''
-    document.body.style.top = ''
-    document.body.style.width = ''
-    window.scrollTo(0, scrollY)
-  }
-}, [])
 
 const division = form.handicap !== '' ? getDivision(form.handicap) : null
 

@@ -517,7 +517,7 @@ if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: Number
       </footer>
 
       {/* MODAL */}
-      {showModal && <EntryModal onClose={() => setShowModal(false)} />}
+      {showModal && createPortal(<EntryModal onClose={() => setShowModal(false)} />, document.body)}
 
     </div>
   )

@@ -16,6 +16,7 @@ import EntryModal from './EntryModal'
 import MobileApp from './MobileApp'
 import { useRef, useState, useEffect } from 'react'
 import confetti from 'canvas-confetti'
+import { createPortal } from 'react-dom'
 import './App.css'
 
 function App() {
@@ -288,7 +289,7 @@ if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: Number
 </div>
 {/* ── END WRAPPER ── */}
       {/* MODAL */}
-      {showModal && <EntryModal onClose={() => setShowModal(false)} />}
+      {showModal && createPortal(<EntryModal onClose={() => setShowModal(false)} />, document.body)}
 
       {/* FOOTER */}
       <footer style={{ backgroundColor: '#0a0d1f', borderTop: '1px solid #d5af4c', padding: '60px 100px 40px' }}>
