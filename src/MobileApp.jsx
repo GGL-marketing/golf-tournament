@@ -12,6 +12,7 @@ import SplitText from './SplitText'
 import ShinyText from './ShinyText'
 import EntryModal from './EntryModal'
 import { useRef, useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import confetti from 'canvas-confetti'
 import './MobileApp.css'
 
@@ -517,7 +518,7 @@ if (window.fbq) window.fbq('track', 'Purchase', { currency: 'ZAR', value: Number
       </footer>
 
       {/* MODAL */}
-      {showModal && <EntryModal onClose={() => setShowModal(false)} />}
+{showModal && createPortal(<EntryModal onClose={() => setShowModal(false)} />, document.body)}
 
     </div>
   )
