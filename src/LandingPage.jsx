@@ -1,8 +1,10 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, Fragment } from 'react'
+import { createPortal } from 'react-dom'
+import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
 import heroVideo from './assets/hero-video.mp4'
 import gglLogo from './assets/GGL_LOGO.png'
-import ladyGolferImage from './assets/Lady golfer.png'
-import socialGolfImage from './assets/social golf.png'
+import ladyGolferImage from './assets/lady-golfer.webp'
+import socialGolfImage from './assets/social-golf.webp'
 import holeInOneImage from './assets/hole_in_1.webp'
 import './LandingPage.css'
 
@@ -11,6 +13,16 @@ const TIKTOK_URL = 'https://www.tiktok.com/@global_golf_league'
 const CONTACT_EMAIL = 'globalgolfleague.ggl@gmail.com'
 
 const REGIONS = ['Johannesburg', 'Cape Town', 'KwaZulu-Natal', 'Other']
+
+const NAV = [
+  { id: 'top', label: 'GGL' },
+  { id: 'join', label: 'Join / Sign Up' },
+  { id: 'challenge', label: 'Hole-In-One Challenge' },
+  { id: 'tournament', label: 'New Era Tournament' },
+  { id: 'app', label: 'App' },
+  { id: 'why', label: 'Why We Care' },
+  { id: 'faq', label: "FAQ's" },
+]
 
 const BENEFITS = [
   { benefit: 'GGL App Access', general: 'Standard download', vip: '3-month free trial included' },
@@ -58,26 +70,28 @@ const PRIZES = [
   },
 ]
 
+const TOURNAMENT_TERMS = [
+  { label: 'Prize Form', text: 'Prizes are issued as non-cash gift vouchers for Canal Walk only.' },
+  { label: 'No Cash Value', text: 'Gift vouchers cannot be exchanged, returned or redeemed for cash.' },
+  { label: 'Redemption', text: 'Prizes are non-transferable and subject to issuer validity periods and standard terms.' },
+  { label: 'Liability', text: 'GGL is not responsible for lost, stolen or expired gift vouchers.' },
+]
+
 const FEATURES = [
   {
     id: 'challenge',
     number: '01',
     title: 'The GGL Hole-In-One Challenge',
     status: 'Partner clubs being finalised • Activations starting soon',
-    intro: 'One official shot on a designated par 3 to win R100,000 in gift vouchers.',
+    intro: 'One official shot on a designated par 3 to win R100,000 cash.',
     image: holeInOneImage,
     imageAlt: 'Golfer on a par 3',
+    pointsTitle: 'Hole-In-One Details',
     points: [
       { label: 'The Setup', text: 'GGL partners with selected golf clubs for one month at a time, hosting an official challenge day once a week on a designated Par 3.' },
-      { label: 'The Rules', text: 'Capped at 100 amateur players per challenge day. Every player receives exactly one official, monitored shot to hole out for the R100,000 prize.' },
+      { label: 'The Rules', text: 'Capped at 100 amateur players per challenge day. Every player receives exactly one official, monitored shot to hole out for R100,000 cash.' },
       { label: 'Eligibility', text: 'Open to amateur golfers with an active HNA number. Under 18s may take part in the Challenge but are not eligible to win the R100,000 prize.' },
       { label: 'Pre-Launch Perk', text: 'Challenge registration requires GGL Pre-Membership. Pre-registering today secures your spot in line as soon as the first partner club dates drop.' },
-    ],
-    terms: [
-      { label: 'Prize Form', text: 'The R100,000 prize is issued as non-cash gift vouchers.' },
-      { label: 'No Cash Value', text: 'Gift vouchers cannot be exchanged, returned or redeemed for cash.' },
-      { label: 'Redemption', text: 'Prizes are non-transferable and subject to issuer validity periods and standard terms.' },
-      { label: 'Liability', text: 'GGL is not responsible for lost, stolen or expired gift vouchers.' },
     ],
   },
   {
@@ -89,6 +103,7 @@ const FEATURES = [
     image: ladyGolferImage,
     imageAlt: 'GGL golfer mid-swing',
     showPrizes: true,
+    pointsTitle: 'Tournament Details',
     points: [
       { label: 'R120,000 Total Prize Pool', text: 'R116,000 in Canal Walk gift vouchers across the three divisions, paying down to 5th place in every division, plus an optional R4,000 putting competition.' },
       { label: 'R250,000 In-Tournament Aces', text: 'Two R250,000 Hole-in-One opportunities on each tournament day, giving you four chances across the two days. Subject to applicable insurance and event conditions.' },
@@ -96,12 +111,6 @@ const FEATURES = [
       { label: 'Two-Day Cut Format', text: 'Day 1 features 17 three-balls per division. The top 24 players in each division advance to Day 2, carrying their Stableford points forward.' },
       { label: 'Tour Perks & Mulligans', text: '18 dedicated course marshals to keep pace, one GGL Mulligan on Day 1 (tee shot or second shot), and a playoff hole to settle ties for any prize position.' },
       { label: 'Pre-Launch Perk', text: 'With fields capped at 51 golfers per division, waitlist members get a 48-hour priority window before entries open to the general public.' },
-    ],
-    terms: [
-      { label: 'Prize Form', text: 'Prizes are issued as non-cash gift vouchers for Canal Walk only.' },
-      { label: 'No Cash Value', text: 'Gift vouchers cannot be exchanged, returned or redeemed for cash.' },
-      { label: 'Redemption', text: 'Prizes are non-transferable and subject to issuer validity periods and standard terms.' },
-      { label: 'Liability', text: 'GGL is not responsible for lost, stolen or expired gift vouchers.' },
     ],
   },
   {
@@ -112,6 +121,7 @@ const FEATURES = [
     intro: 'A dedicated app for iOS, Android and web that powers your everyday golf life.',
     image: socialGolfImage,
     imageAlt: 'Two golfers relaxing on the course',
+    pointsTitle: 'App Features',
     points: [
       { label: 'Automated HNA Handicap Sync', text: 'Your official HNA handicap syncs to your profile automatically. No manual self-reporting.' },
       {
@@ -153,8 +163,8 @@ const FAQS = [
     a: 'Entry fees are set per division: Division 1 (handicap 0–9) is R2,500, Division 2 (handicap 10–17) is R2,000 and Division 3 (handicap 18–35) is R1,000. Waitlist members get a 48-hour priority window before entries open to the public.',
   },
   {
-    q: 'Are prizes paid in cash?',
-    a: "No. Hole-in-One Challenge and New Era Tournament prizes are issued as non-cash gift vouchers. They cannot be exchanged, returned or redeemed for cash, and are subject to the issuer's validity periods and standard terms.",
+    q: 'How are prizes paid?',
+    a: "The Hole-in-One Challenge prize is R100,000 cash. New Era Tournament divisional prizes are issued as non-cash Canal Walk gift vouchers, which cannot be exchanged, returned or redeemed for cash and are subject to the issuer's validity periods and standard terms.",
   },
   {
     q: 'Who can participate in GGL events?',
@@ -165,6 +175,95 @@ const FAQS = [
 const PATHS = {
   loop: 'M0 230 C 120 150, 260 150, 320 220 C 360 270, 300 315, 250 290 C 200 265, 240 205, 320 215 C 430 230, 500 120, 600 40',
   wave: 'M0 180 C 120 110, 220 110, 300 190 C 380 270, 480 280, 600 60',
+}
+
+const EASE = [0.22, 1, 0.36, 1]
+
+const MOTION_TAGS = {
+  div: motion.div,
+  p: motion.p,
+  span: motion.span,
+  h1: motion.h1,
+  h2: motion.h2,
+  h3: motion.h3,
+  ul: motion.ul,
+  blockquote: motion.blockquote,
+}
+
+const CHAR_VARIANTS = {
+  hidden: { opacity: 0, filter: 'blur(10px)', y: 14 },
+  show: { opacity: 1, filter: 'blur(0px)', y: 0, transition: { duration: 0.55, ease: EASE } },
+}
+
+const STATIC_VARIANTS = {
+  hidden: { opacity: 1 },
+  show: { opacity: 1 },
+}
+
+/* Headings: blur in and rise, one character at a time */
+function TextAnimate({ text, as = 'span', className = '', delay = 0, stagger = 0.02 }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, amount: 0.5 })
+  const reduceMotion = useReducedMotion()
+  const Tag = MOTION_TAGS[as]
+  const words = text.split(' ')
+
+  return (
+    <Tag
+      ref={ref}
+      className={className}
+      aria-label={text}
+      initial="hidden"
+      animate={inView ? 'show' : 'hidden'}
+      variants={{ hidden: {}, show: { transition: { staggerChildren: reduceMotion ? 0 : stagger, delayChildren: delay } } }}
+    >
+      {words.map((word, wi) => (
+        <Fragment key={wi}>
+          <span className="ta-word" aria-hidden="true">
+            {Array.from(word).map((char, ci) => (
+              <motion.span key={ci} className="ta-char" variants={reduceMotion ? STATIC_VARIANTS : CHAR_VARIANTS}>
+                {char}
+              </motion.span>
+            ))}
+          </span>
+          {wi < words.length - 1 ? ' ' : null}
+        </Fragment>
+      ))}
+    </Tag>
+  )
+}
+
+/* Body text: resolves from blur when it scrolls into view, softens again when it leaves */
+function BlurReveal({ as = 'div', className = '', delay = 0, children }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { amount: 0.15 })
+  const reduceMotion = useReducedMotion()
+  const Tag = MOTION_TAGS[as]
+
+  if (reduceMotion) {
+    const Plain = as
+    return <Plain className={className}>{children}</Plain>
+  }
+
+  return (
+    <Tag
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0, filter: 'blur(12px)', y: 16 }}
+      animate={inView ? { opacity: 1, filter: 'blur(0px)', y: 0 } : { opacity: 0.2, filter: 'blur(8px)', y: 10 }}
+      transition={{ duration: 0.9, ease: EASE, delay: inView ? delay : 0 }}
+    >
+      {children}
+    </Tag>
+  )
+}
+
+function TextureButton({ variant = 'gold', size = 'md', block = false, type = 'button', className = '', children, ...props }) {
+  return (
+    <button type={type} className={`tx-btn tx-${variant} tx-${size} ${block ? 'tx-block' : ''} ${className}`} {...props}>
+      <span className="tx-btn-inner">{children}</span>
+    </button>
+  )
 }
 
 function Swoosh({ id, variant = 'gold', shape = 'loop', className = '' }) {
@@ -203,8 +302,194 @@ function Terms({ items }) {
   )
 }
 
+function WaitlistForm({ idPrefix, form, onChange, consent, onConsent, status, error, onSubmit, onFollow }) {
+  if (status === 'success') {
+    return (
+      <div className="lp-success">
+        <p className="lp-success-icon">⛳</p>
+        <h3 className="lp-form-title">You're On The List</h3>
+        <p className="lp-form-sub">
+          Thanks, {form.firstName.trim()}. We'll be in touch by email and WhatsApp as each launch goes live. Follow us on Instagram for updates in the meantime.
+        </p>
+        <TextureButton block onClick={onFollow}>Follow on Instagram</TextureButton>
+      </div>
+    )
+  }
+
+  const fid = (name) => `${idPrefix}-${name}`
+
+  return (
+    <>
+      <h3 className="lp-form-title">Join the Waitlist</h3>
+      <p className="lp-form-sub">Free to join. Takes under a minute.</p>
+
+      <form className="lp-form" onSubmit={onSubmit} noValidate>
+        <div className="lp-row">
+          <div>
+            <label className="lp-label" htmlFor={fid('firstName')}>First Name</label>
+            <input id={fid('firstName')} name="firstName" className="lp-input" value={form.firstName} onChange={onChange} placeholder="John" autoComplete="given-name" />
+          </div>
+          <div>
+            <label className="lp-label" htmlFor={fid('lastName')}>Last Name</label>
+            <input id={fid('lastName')} name="lastName" className="lp-input" value={form.lastName} onChange={onChange} placeholder="Smith" autoComplete="family-name" />
+          </div>
+        </div>
+
+        <div>
+          <label className="lp-label" htmlFor={fid('email')}>Email</label>
+          <input id={fid('email')} name="email" type="email" className="lp-input" value={form.email} onChange={onChange} placeholder="john@example.com" autoComplete="email" />
+        </div>
+
+        <div>
+          <label className="lp-label" htmlFor={fid('whatsapp')}>WhatsApp Number</label>
+          <input id={fid('whatsapp')} name="whatsapp" type="tel" className="lp-input" value={form.whatsapp} onChange={onChange} placeholder="+27 82 123 4567" autoComplete="tel" />
+        </div>
+
+        <div>
+          <label className="lp-label" htmlFor={fid('homeClub')}>Home Golf Club</label>
+          <input id={fid('homeClub')} name="homeClub" className="lp-input" value={form.homeClub} onChange={onChange} placeholder="Rondebosch Golf Club" />
+        </div>
+
+        <div className="lp-row">
+          <div>
+            <label className="lp-label" htmlFor={fid('region')}>Region</label>
+            <select id={fid('region')} name="region" className="lp-input lp-select" value={form.region} onChange={onChange}>
+              <option value="">Select</option>
+              {REGIONS.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="lp-label" htmlFor={fid('handicap')}>
+              Handicap <span className="lp-label-optional">(optional)</span>
+            </label>
+            <input id={fid('handicap')} name="handicap" type="number" min="0" max="54" step="0.1" className="lp-input" value={form.handicap} onChange={onChange} placeholder="0 to 54" />
+          </div>
+        </div>
+
+        <label className="lp-check">
+          <input type="checkbox" checked={consent} onChange={onConsent} />
+          <span>I agree to receive emails and WhatsApp messages from Global Golf League. I can unsubscribe at any time.</span>
+        </label>
+
+        {error && <p className="lp-error">{error}</p>}
+
+        <TextureButton type="submit" block disabled={status === 'loading'}>
+          {status === 'loading' ? 'Signing You Up...' : 'Sign Me Up'}
+        </TextureButton>
+      </form>
+    </>
+  )
+}
+
+/* Slide-out sign-up panel, opened from the header, menu, edge tab and closing CTA */
+function SidePanel({ open, onClose, children }) {
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <Fragment key="side-panel">
+          <motion.div
+            className="sp-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={onClose}
+          />
+          <motion.aside
+            className="sp-panel lp-layer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Join the waitlist"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+          >
+            <button type="button" className="lp-close" onClick={onClose} aria-label="Close" autoFocus>×</button>
+            {children}
+          </motion.aside>
+        </Fragment>
+      )}
+    </AnimatePresence>,
+    document.body
+  )
+}
+
+/* Join card that morphs into a full-screen sign-up view */
+function ExpandableWaitlist({ open, onOpen, onClose, children }) {
+  const reduceMotion = useReducedMotion()
+  const morph = { duration: reduceMotion ? 0 : 0.5, ease: EASE }
+
+  return (
+    <>
+      <div className="xs-slot">
+        <AnimatePresence initial={false}>
+          {!open && (
+            <motion.button
+              key="xs-trigger"
+              type="button"
+              layoutId="ggl-waitlist"
+              className="xs-trigger"
+              style={{ borderRadius: 28 }}
+              transition={morph}
+              onClick={onOpen}
+            >
+              <motion.span layout="position" className="xs-trigger-inner">
+                <span className="xs-trigger-eyebrow">GGL Pre-Membership</span>
+                <span className="xs-trigger-title">Join the Waitlist</span>
+                <span className="xs-trigger-sub">Free to join. Takes under a minute.</span>
+                <span className="tx-btn tx-gold tx-md">
+                  <span className="tx-btn-inner">Get Early Access</span>
+                </span>
+              </motion.span>
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {createPortal(
+        <AnimatePresence>
+          {open && (
+            <Fragment key="xs-screen">
+              <motion.div
+                className="xs-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                onClick={onClose}
+              />
+              <motion.div
+                layoutId="ggl-waitlist"
+                className="xs-screen lp-layer"
+                style={{ borderRadius: 24 }}
+                transition={morph}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Join the waitlist"
+              >
+                <motion.div
+                  className="xs-screen-scroll"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { delay: reduceMotion ? 0 : 0.3, duration: 0.3 } }}
+                  exit={{ opacity: 0, transition: { duration: 0.1 } }}
+                >
+                  <button type="button" className="lp-close" onClick={onClose} aria-label="Close" autoFocus>×</button>
+                  {children}
+                </motion.div>
+              </motion.div>
+            </Fragment>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
+  )
+}
+
 export default function LandingPage() {
-  const formRef = useRef(null)
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -218,18 +503,83 @@ export default function LandingPage() {
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
   const [openFaq, setOpenFaq] = useState(0)
+  const [panelOpen, setPanelOpen] = useState(false)
+  const [screenOpen, setScreenOpen] = useState(false)
+
+  const overlayOpen = panelOpen || screenOpen
+
+  const [pastMenu, setPastMenu] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuGridRef = useRef(null)
+
+  // Phones and tablets: show the slim sticky bar once the menu grid has scrolled off screen
+  useEffect(() => {
+    const check = () => {
+      const el = menuGridRef.current
+      if (!el) return
+      const shown = el.offsetParent !== null
+      setPastMenu(shown && el.getBoundingClientRect().bottom < 0)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!pastMenu) setMenuOpen(false)
+  }, [pastMenu])
+
+  useEffect(() => {
+    if (!overlayOpen) return undefined
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setPanelOpen(false)
+        setScreenOpen(false)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = previous
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [overlayOpen])
+
+  const openPanel = () => {
+    setScreenOpen(false)
+    setPanelOpen(true)
+  }
+
+  const openScreen = () => {
+    setPanelOpen(false)
+    setScreenOpen(true)
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const scrollToForm = () => {
-    if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
-
   const scrollToSection = (id) => {
+    if (id === 'top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const handleNav = (id) => {
+    setMenuOpen(false)
+    if (id === 'join') {
+      openPanel()
+      return
+    }
+    scrollToSection(id)
   }
 
   const openLink = (url) => {
@@ -291,74 +641,109 @@ export default function LandingPage() {
     }
   }
 
+  const formProps = {
+    form,
+    onChange: handleChange,
+    consent,
+    onConsent: () => setConsent(!consent),
+    status,
+    error,
+    onSubmit: handleSubmit,
+    onFollow: () => openLink(INSTAGRAM_URL),
+  }
+
   return (
     <div className="lp">
 
       {/* HEADER */}
       <header className="lp-header">
         <img src={gglLogo} alt="GGL Logo" className="lp-header-logo" />
-        <button className="lp-header-btn" onClick={scrollToForm}>Join the Waitlist</button>
+        <TextureButton variant="navy" size="sm" onClick={openPanel}>Join the Waitlist</TextureButton>
       </header>
 
-      {/* HERO */}
-      <section className="lp-hero">
-        <div className="lp-hero-top">
-          <video autoPlay muted loop playsInline className="lp-hero-video">
-            <source src={heroVideo} type="video/mp4" />
-          </video>
-          <div className="lp-hero-overlay" />
-          <div className="lp-hero-top-inner">
-            <h1 className="lp-wordmark">GGL</h1>
-            <p className="lp-hero-name">Global Golf League</p>
-            <p className="lp-hero-tagline">For everyday players to feel like a pro</p>
-          </div>
+      {/* HERO TOP */}
+      <section className="lp-hero-top">
+        <video autoPlay muted loop playsInline className="lp-hero-video">
+          <source src={heroVideo} type="video/mp4" />
+        </video>
+        <div className="lp-hero-overlay" />
+        <div className="lp-hero-top-inner">
+          <TextAnimate as="h1" text="GGL" className="lp-wordmark" stagger={0.12} />
+          <TextAnimate as="p" text="Global Golf League" className="lp-hero-name" delay={0.35} stagger={0.03} />
+          <TextAnimate as="p" text="For everyday players to feel like a pro" className="lp-hero-tagline" delay={0.8} stagger={0.02} />
         </div>
+      </section>
 
-        <div className="lp-hero-split">
-          <div className="lp-hero-copy">
-            <h2 className="lp-hero-question">Running out of ways to make your golf game interesting?</h2>
-            <p className="lp-hero-sub">Tired of only playing for bragging rights?</p>
-            <p className="lp-body lp-body-navy">
-              The Global Golf League is built for the golfers who want more. We are here to give it to you!
-            </p>
-            <p className="lp-hero-label">For us, this means:</p>
-            <p className="lp-hero-mission">
-              Creating a competitive golf league experience where amateur golfers of all ages and gender can enjoy the game they love, and feel that their game matters.
-            </p>
-            <button className="lp-btn lp-btn-navy" onClick={scrollToForm}>Join the Waitlist</button>
-          </div>
+      {/* NAV MENU */}
+      <nav className="lp-nav" aria-label="Page sections">
+        <div className="lp-nav-inner">
+          {NAV.map((item) => (
+            item.id === 'join' ? (
+              <TextureButton key={item.id} size="xs" className="lp-nav-cta" onClick={() => handleNav(item.id)}>
+                {item.label}
+              </TextureButton>
+            ) : (
+              <button
+                key={item.id}
+                type="button"
+                className={`lp-nav-link ${item.id === 'top' ? 'lp-nav-link-brand' : ''}`}
+                onClick={() => handleNav(item.id)}
+              >
+                {item.label}
+              </button>
+            )
+          ))}
+        </div>
+      </nav>
 
-          <div className="lp-contents">
-            <p className="lp-contents-title">Coming Up:</p>
-            <button className="lp-contents-link" onClick={() => scrollToSection('challenge')}>GGL Hole-In-One Challenge</button>
-            <button className="lp-contents-link" onClick={() => scrollToSection('tournament')}>GGL New Era Tournament</button>
-            <button className="lp-contents-link" onClick={() => scrollToSection('app')}>GGL App</button>
-          </div>
+      {/* MENU GRID (phones and tablets only) */}
+      <nav className="lp-menu-grid" ref={menuGridRef} aria-label="Page sections">
+        {NAV.filter((item) => item.id !== 'top').map((item) => (
+          item.id === 'join' ? (
+            <TextureButton key={item.id} block className="lp-menu-grid-join" onClick={() => handleNav(item.id)}>
+              {item.label}
+            </TextureButton>
+          ) : (
+            <button key={item.id} type="button" className="lp-menu-grid-item" onClick={() => handleNav(item.id)}>
+              {item.label}
+            </button>
+          )
+        ))}
+      </nav>
+
+      {/* HERO COPY */}
+      <section className="lp-hero">
+        <div className="lp-hero-copy">
+          <TextAnimate as="h2" text="Running out of ways to make your golf game interesting?" className="lp-hero-question" />
+          <BlurReveal as="p" className="lp-hero-body" delay={0.1}>
+            Global Golf League is built for the golfers who want more. We are here to give it to you!
+          </BlurReveal>
+          <BlurReveal as="p" className="lp-hero-mission" delay={0.2}>
+            We've created a competitive golf league experience where amateur golfers of all ages and gender can enjoy the game they love, and feel that their game matters.
+          </BlurReveal>
         </div>
 
         <Swoosh variant="navy" shape="wave" className="lp-swoosh lp-swoosh-hero" />
       </section>
 
-      {/* SIGNUP */}
-      <section className="lp-section-white">
+      {/* JOIN THE WAITLIST */}
+      <section id="join" className="lp-section-white lp-anchor">
         <div className="lp-title-band">
-          <p className="lp-band-eyebrow">We are getting warmed up.</p>
-          <div className="lp-title-box"><h2>Get Notified When We Go Live</h2></div>
+          <TextAnimate as="p" text="We are getting warmed up." className="lp-band-eyebrow" />
+          <div className="lp-title-box">
+            <TextAnimate as="h2" text="Get Notified When We Go Live" delay={0.2} />
+          </div>
         </div>
 
         <div className="lp-container">
-          <p className="lp-lead">
-            Sign up for GGL Pre-Membership to receive immediate notifications as our app launches, tournament fixtures open, and challenge dates are announced.
-          </p>
-
           <div className="lp-signup-grid">
             <div className="lp-why">
-              <div className="lp-bar"><span>Why join the waitlist today?</span></div>
-              <p className="lp-body lp-body-dark">
+              <div className="lp-bar"><TextAnimate text="Why join the waitlist today?" /></div>
+              <BlurReveal as="p" className="lp-body lp-body-dark">
                 With capped tournament entries and limited challenge slots, access is handled on a first-come, first-served basis.
-              </p>
+              </BlurReveal>
 
-              <div className="lp-gold-table lp-benefits">
+              <BlurReveal className="lp-gold-table lp-benefits" delay={0.1}>
                 <div className="lp-gold-row lp-gold-head">
                   <span>Benefit</span>
                   <span>General Public</span>
@@ -367,87 +752,35 @@ export default function LandingPage() {
                 {BENEFITS.map((row) => (
                   <div key={row.benefit} className="lp-gold-row">
                     <span className="lp-gold-label">{row.benefit}</span>
-                    <span data-label="General Public">{row.general}</span>
+                    <span data-label="General Public" className="lp-gold-general">{row.general}</span>
                     <span data-label="VIP List" className="lp-gold-vip">{row.vip}</span>
                   </div>
                 ))}
-              </div>
+              </BlurReveal>
             </div>
 
-            <div className="lp-form-card" ref={formRef}>
-              {status === 'success' ? (
-                <div className="lp-success">
-                  <p className="lp-success-icon">⛳</p>
-                  <h3 className="lp-form-title">You're On The List</h3>
-                  <p className="lp-form-sub">
-                    Thanks, {form.firstName.trim()}. We'll be in touch by email and WhatsApp as each launch goes live. Follow us on Instagram for updates in the meantime.
+            <ExpandableWaitlist open={screenOpen} onOpen={openScreen} onClose={() => setScreenOpen(false)}>
+              <div className="xs-grid">
+                <div className="xs-intro">
+                  <p className="lp-band-eyebrow xs-eyebrow">We are getting warmed up.</p>
+                  <h2 className="xs-title">Join the Waitlist</h2>
+                  <p className="xs-lead">
+                    Sign up for GGL Pre-Membership to receive immediate notifications as our app launches, tournament fixtures open, and challenge dates are announced.
                   </p>
-                  <button className="lp-btn" onClick={() => openLink(INSTAGRAM_URL)}>Follow on Instagram</button>
+                  <ul className="xs-perks">
+                    {BENEFITS.map((row) => (
+                      <li key={row.benefit}>
+                        <span className="xs-perk-label">{row.benefit}</span>
+                        <span className="xs-perk-text">{row.vip}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              ) : (
-                <>
-                  <h3 className="lp-form-title">Join the Waitlist</h3>
-                  <p className="lp-form-sub">Free to join. Takes under a minute.</p>
-
-                  <form className="lp-form" onSubmit={handleSubmit} noValidate>
-                    <div className="lp-row">
-                      <div>
-                        <label className="lp-label" htmlFor="firstName">First Name</label>
-                        <input id="firstName" name="firstName" className="lp-input" value={form.firstName} onChange={handleChange} placeholder="John" autoComplete="given-name" />
-                      </div>
-                      <div>
-                        <label className="lp-label" htmlFor="lastName">Last Name</label>
-                        <input id="lastName" name="lastName" className="lp-input" value={form.lastName} onChange={handleChange} placeholder="Smith" autoComplete="family-name" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="lp-label" htmlFor="email">Email</label>
-                      <input id="email" name="email" type="email" className="lp-input" value={form.email} onChange={handleChange} placeholder="john@example.com" autoComplete="email" />
-                    </div>
-
-                    <div>
-                      <label className="lp-label" htmlFor="whatsapp">WhatsApp Number</label>
-                      <input id="whatsapp" name="whatsapp" type="tel" className="lp-input" value={form.whatsapp} onChange={handleChange} placeholder="+27 82 123 4567" autoComplete="tel" />
-                    </div>
-
-                    <div>
-                      <label className="lp-label" htmlFor="homeClub">Home Golf Club</label>
-                      <input id="homeClub" name="homeClub" className="lp-input" value={form.homeClub} onChange={handleChange} placeholder="Rondebosch Golf Club" />
-                    </div>
-
-                    <div className="lp-row">
-                      <div>
-                        <label className="lp-label" htmlFor="region">Region</label>
-                        <select id="region" name="region" className="lp-input lp-select" value={form.region} onChange={handleChange}>
-                          <option value="">Select</option>
-                          {REGIONS.map((r) => (
-                            <option key={r} value={r}>{r}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="lp-label" htmlFor="handicap">
-                          Handicap <span className="lp-label-optional">(optional)</span>
-                        </label>
-                        <input id="handicap" name="handicap" type="number" min="0" max="54" step="0.1" className="lp-input" value={form.handicap} onChange={handleChange} placeholder="0 to 54" />
-                      </div>
-                    </div>
-
-                    <label className="lp-check">
-                      <input type="checkbox" checked={consent} onChange={() => setConsent(!consent)} />
-                      <span>I agree to receive emails and WhatsApp messages from Global Golf League. I can unsubscribe at any time.</span>
-                    </label>
-
-                    {error && <p className="lp-error">{error}</p>}
-
-                    <button type="submit" className="lp-btn" disabled={status === 'loading'}>
-                      {status === 'loading' ? 'Signing You Up...' : 'Sign Me Up'}
-                    </button>
-                  </form>
-                </>
-              )}
-            </div>
+                <div className="lp-form-card">
+                  <WaitlistForm idPrefix="screen" {...formProps} />
+                </div>
+              </div>
+            </ExpandableWaitlist>
           </div>
         </div>
 
@@ -457,22 +790,24 @@ export default function LandingPage() {
       {/* WHAT YOU CAN LOOK FORWARD TO */}
       <section className="lp-section-white">
         <div className="lp-title-band">
-          <div className="lp-title-box"><h2>What You Can Look Forward To</h2></div>
+          <div className="lp-title-box">
+            <TextAnimate as="h2" text="What You Can Look Forward To" />
+          </div>
         </div>
 
         <div className="lp-container lp-container-swoosh">
           {FEATURES.map((feature, index) => (
             <article key={feature.id} id={feature.id} className={`lp-feature ${index % 2 === 1 ? 'lp-feature-reverse' : ''}`}>
-              <div className="lp-bar"><span>{feature.number}. {feature.title}</span></div>
+              <div className="lp-bar lp-bar-feature"><TextAnimate text={`${feature.number}. ${feature.title}`} /></div>
 
-              <div className="lp-feature-head">
+              <BlurReveal className="lp-feature-head">
                 <span className="lp-status">{feature.status}</span>
                 <p className="lp-feature-intro">{feature.intro}</p>
-              </div>
+              </BlurReveal>
 
               {feature.showPrizes && (
                 <div className="lp-prizes">
-                  <div className="lp-prize-grid">
+                  <BlurReveal className="lp-prize-grid">
                     {PRIZES.map((division) => (
                       <div key={division.name} className="lp-gold-table lp-prize-card">
                         <div className="lp-prize-head">
@@ -496,14 +831,17 @@ export default function LandingPage() {
                         </div>
                       </div>
                     ))}
-                  </div>
-                  <Terms items={feature.terms} />
+                  </BlurReveal>
+                  <BlurReveal>
+                    <Terms items={TOURNAMENT_TERMS} />
+                  </BlurReveal>
                 </div>
               )}
 
               <div className="lp-feature-grid">
                 <div className="lp-feature-content">
-                  <ul className="lp-points">
+                  {feature.pointsTitle && <h3 className="lp-points-title">{feature.pointsTitle}</h3>}
+                  <BlurReveal as="ul" className="lp-points">
                     {feature.points.map((point) => (
                       <li key={point.label}>
                         <strong>{point.label}:</strong> {point.text}
@@ -516,9 +854,7 @@ export default function LandingPage() {
                         )}
                       </li>
                     ))}
-                  </ul>
-
-                  {feature.terms && !feature.showPrizes && <Terms items={feature.terms} />}
+                  </BlurReveal>
                 </div>
 
                 <div className="lp-feature-media">
@@ -533,60 +869,136 @@ export default function LandingPage() {
       </section>
 
       {/* WHY WE CARE */}
-      <section className="lp-section-navy">
+      <section id="why" className="lp-section-navy lp-anchor">
         <div className="lp-title-band lp-title-band-flush">
-          <div className="lp-title-box"><h2>Why We Care</h2></div>
+          <div className="lp-title-box">
+            <TextAnimate as="h2" text="Why We Care" />
+          </div>
         </div>
 
         <div className="lp-container lp-narrow">
           {WHY_WE_CARE_INTRO.map((p, i) => (
-            <p key={i} className="lp-body lp-body-light">{p}</p>
+            <BlurReveal key={i} as="p" className="lp-body lp-body-light">{p}</BlurReveal>
           ))}
-          <p className="lp-care-strong">That is where GGL steps in.</p>
-          <blockquote className="lp-mission">
+          <TextAnimate as="p" text="That is where GGL steps in." className="lp-care-strong" />
+          <BlurReveal as="blockquote" className="lp-mission">
             Our mission is simple: to create a competitive golf league experience where amateur golfers of all ages and genders can enjoy the game they love, and feel that their game matters.
-          </blockquote>
+          </BlurReveal>
           {WHY_WE_CARE_OUTRO.map((p, i) => (
-            <p key={i} className="lp-body lp-body-light">{p}</p>
+            <BlurReveal key={i} as="p" className="lp-body lp-body-light">{p}</BlurReveal>
           ))}
         </div>
       </section>
 
       {/* FAQS */}
-      <section className="lp-section-white">
+      <section id="faq" className="lp-section-white lp-anchor">
         <div className="lp-title-band">
-          <div className="lp-title-box"><h2>FAQs</h2></div>
+          <div className="lp-title-box">
+            <TextAnimate as="h2" text="FAQs" />
+          </div>
         </div>
 
         <div className="lp-container lp-narrow">
           {FAQS.map((faq, i) => (
-            <div key={faq.q} className="lp-faq-item">
-              <button className="lp-bar lp-faq-q" onClick={() => setOpenFaq(openFaq === i ? -1 : i)} aria-expanded={openFaq === i}>
+            <BlurReveal key={faq.q} className="lp-faq-item">
+              <button type="button" className="lp-bar lp-faq-q" onClick={() => setOpenFaq(openFaq === i ? -1 : i)} aria-expanded={openFaq === i}>
                 <span>{faq.q}</span>
                 <span className="lp-faq-icon">{openFaq === i ? '−' : '+'}</span>
               </button>
               {openFaq === i && <p className="lp-body lp-body-dark lp-faq-a">{faq.a}</p>}
-            </div>
+            </BlurReveal>
           ))}
         </div>
       </section>
 
       {/* CTA */}
       <section className="lp-cta">
-        <h2 className="lp-cta-title">Get Notified When We Go Live</h2>
-        <button className="lp-btn lp-cta-btn" onClick={scrollToForm}>Join the Waitlist</button>
+        <TextAnimate as="h2" text="Get Notified When We Go Live" className="lp-cta-title" />
+        <TextureButton size="lg" onClick={openPanel}>Join the Waitlist</TextureButton>
       </section>
 
       {/* FOOTER */}
       <footer className="lp-footer">
         <p className="lp-footer-logo">GGL</p>
         <div className="lp-footer-links">
-          <button className="lp-footer-link" onClick={() => openLink(INSTAGRAM_URL)}>Instagram</button>
-          <button className="lp-footer-link" onClick={() => openLink(TIKTOK_URL)}>TikTok</button>
-          <button className="lp-footer-link" onClick={() => { window.location.href = `mailto:${CONTACT_EMAIL}` }}>{CONTACT_EMAIL}</button>
+          <button type="button" className="lp-footer-link" onClick={() => openLink(INSTAGRAM_URL)}>Instagram</button>
+          <button type="button" className="lp-footer-link" onClick={() => openLink(TIKTOK_URL)}>TikTok</button>
+          <button type="button" className="lp-footer-link" onClick={() => { window.location.href = `mailto:${CONTACT_EMAIL}` }}>{CONTACT_EMAIL}</button>
         </div>
         <p className="lp-footer-copy">© 2026 Global Golf League. All rights reserved.</p>
       </footer>
+
+      {/* STICKY BAR (phones and tablets only, after the menu grid scrolls away) */}
+      <AnimatePresence>
+        {pastMenu && (
+          <motion.div
+            key="mbar"
+            className="lp-mbar"
+            initial={{ y: '-100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '-100%' }}
+            transition={{ duration: 0.3, ease: EASE }}
+          >
+            <div className="lp-mbar-row">
+              <button type="button" className="lp-mbar-brand" onClick={() => handleNav('top')}>GGL</button>
+              <div className="lp-mbar-actions">
+                <TextureButton size="xs" onClick={() => handleNav('join')}>Join</TextureButton>
+                <button
+                  type="button"
+                  className="lp-mbar-menu"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen(!menuOpen)}
+                >
+                  <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span>
+                  {menuOpen ? 'Close' : 'Menu'}
+                </button>
+              </div>
+            </div>
+
+            <AnimatePresence initial={false}>
+              {menuOpen && (
+                <motion.ul
+                  key="mbar-list"
+                  className="lp-mbar-list"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2, ease: EASE }}
+                >
+                  {NAV.filter((item) => item.id !== 'top' && item.id !== 'join').map((item) => (
+                    <li key={item.id}>
+                      <button type="button" onClick={() => handleNav(item.id)}>{item.label}</button>
+                    </li>
+                  ))}
+                </motion.ul>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* EDGE TAB (opens the side panel) */}
+      <AnimatePresence>
+        {!overlayOpen && (
+          <motion.div
+            key="sp-tab"
+            className="sp-tab"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <TextureButton onClick={openPanel}>Join the Waitlist</TextureButton>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* SIDE PANEL */}
+      <SidePanel open={panelOpen} onClose={() => setPanelOpen(false)}>
+        <div className="lp-form-plain">
+          <WaitlistForm idPrefix="panel" {...formProps} />
+        </div>
+      </SidePanel>
 
     </div>
   )
