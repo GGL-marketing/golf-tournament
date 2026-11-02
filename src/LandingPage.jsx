@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, Fragment } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useInView, useReducedMotion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from 'motion/react'
 import heroVideo from './assets/hero-video.mp4'
-import gglLogo from './assets/GGL_LOGO.png'
 import ladyGolferImage from './assets/lady-golfer.webp'
 import socialGolfImage from './assets/social-golf.webp'
 import holeInOneImage from './assets/hole_in_1.webp'
@@ -550,75 +549,6 @@ function SidePanel({ open, onClose, children }) {
   )
 }
 
-/* Button that morphs into a full-screen sign-up view */
-function ExpandableWaitlist({ open, onOpen, onClose, label, children }) {
-  const reduceMotion = useReducedMotion()
-  const morph = { duration: reduceMotion ? 0 : 0.5, ease: EASE }
-
-  return (
-    <>
-      <div className="xs-slot">
-        {/* Invisible copy holds the button's space while the real one is expanded */}
-        <span className="tx-btn tx-gold tx-md xs-ghost" aria-hidden="true">
-          <span className="tx-btn-inner">{label}</span>
-        </span>
-        <AnimatePresence initial={false}>
-          {!open && (
-            <motion.button
-              key="xs-trigger"
-              type="button"
-              layoutId="ggl-waitlist"
-              className="tx-btn tx-gold tx-md xs-trigger"
-              style={{ borderRadius: 14 }}
-              transition={morph}
-              onClick={onOpen}
-            >
-              <span className="tx-btn-inner">{label}</span>
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {createPortal(
-        <AnimatePresence>
-          {open && (
-            <Fragment key="xs-screen">
-              <motion.div
-                className="xs-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                onClick={onClose}
-              />
-              <motion.div
-                layoutId="ggl-waitlist"
-                className="xs-screen lp-layer"
-                style={{ borderRadius: 24 }}
-                transition={morph}
-                role="dialog"
-                aria-modal="true"
-                aria-label="Join the waitlist"
-              >
-                <motion.div
-                  className="xs-screen-scroll"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, transition: { delay: reduceMotion ? 0 : 0.3, duration: 0.3 } }}
-                  exit={{ opacity: 0, transition: { duration: 0.1 } }}
-                >
-                  <button type="button" className="lp-close" onClick={onClose} aria-label="Close" autoFocus>×</button>
-                  {children}
-                </motion.div>
-              </motion.div>
-            </Fragment>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
-    </>
-  )
-}
-
 export default function LandingPage() {
   const [form, setForm] = useState({
     firstName: '',
@@ -634,33 +564,22 @@ export default function LandingPage() {
   const [error, setError] = useState('')
   const [openFaq, setOpenFaq] = useState(0)
   const [panelOpen, setPanelOpen] = useState(false)
-  const [screenOpen, setScreenOpen] = useState(false)
-  const [pastMenu, setPastMenu] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const menuGridRef = useRef(null)
 
-  const overlayOpen = panelOpen || screenOpen
+  const overlayOpen = panelOpen
 
-  // Phones and tablets: show the slim sticky bar once the menu grid has scrolled off screen
+  // Show the sticky menu bar as soon as the visitor starts scrolling
   useEffect(() => {
-    const check = () => {
-      const el = menuGridRef.current
-      if (!el) return
-      const shown = el.offsetParent !== null
-      setPastMenu(shown && el.getBoundingClientRect().bottom < 0)
-    }
+    const check = () => setScrolled(window.scrollY > 10)
     check()
     window.addEventListener('scroll', check, { passive: true })
-    window.addEventListener('resize', check)
-    return () => {
-      window.removeEventListener('scroll', check)
-      window.removeEventListener('resize', check)
-    }
+    return () => window.removeEventListener('scroll', check)
   }, [])
 
   useEffect(() => {
-    if (!pastMenu) setMenuOpen(false)
-  }, [pastMenu])
+    if (!scrolled) setMenuOpen(false)
+  }, [scrolled])
 
   useEffect(() => {
     if (!overlayOpen) return undefined
@@ -669,7 +588,6 @@ export default function LandingPage() {
     const onKey = (e) => {
       if (e.key === 'Escape') {
         setPanelOpen(false)
-        setScreenOpen(false)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -680,13 +598,7 @@ export default function LandingPage() {
   }, [overlayOpen])
 
   const openPanel = () => {
-    setScreenOpen(false)
     setPanelOpen(true)
-  }
-
-  const openScreen = () => {
-    setPanelOpen(false)
-    setScreenOpen(true)
   }
 
   const handleChange = (e) => {
@@ -784,12 +696,6 @@ export default function LandingPage() {
   return (
     <div className="lp">
 
-      {/* HEADER */}
-      <header className="lp-header">
-        <img src={gglLogo} alt="GGL Logo" className="lp-header-logo" />
-        <TextureButton variant="navy" size="sm" onClick={openPanel}>Join the Waitlist</TextureButton>
-      </header>
-
       {/* HERO TOP */}
       <section className="lp-hero-top">
         <video autoPlay muted loop playsInline className="lp-hero-video">
@@ -804,7 +710,7 @@ export default function LandingPage() {
       </section>
 
       {/* NAV MENU */}
-      <nav className="lp-nav" aria-label="Page sections">
+      <nav className={`lp-nav ${scrolled ? 'is-visible' : ''}`} aria-label="Page sections">
         <div className="lp-nav-inner">
           {NAV.map((item) => (
             item.id === 'join' ? (
@@ -826,7 +732,7 @@ export default function LandingPage() {
       </nav>
 
       {/* MENU GRID (phones and tablets only) */}
-      <nav className="lp-menu-grid" ref={menuGridRef} aria-label="Page sections">
+      <nav className="lp-menu-grid" aria-label="Page sections">
         {NAV.filter((item) => item.id !== 'top').map((item) => (
           item.id === 'join' ? (
             <TextureButton key={item.id} block className="lp-menu-grid-join" onClick={() => handleNav(item.id)}>
@@ -873,13 +779,7 @@ export default function LandingPage() {
               ))}
             </BlurReveal>
 
-            <ExpandableWaitlist label="Get Early Access" open={screenOpen} onOpen={openScreen} onClose={() => setScreenOpen(false)}>
-              <div className="xs-form-wrap">
-                <div className="lp-form-card">
-                  <WaitlistForm idPrefix="screen" {...formProps} />
-                </div>
-              </div>
-            </ExpandableWaitlist>
+            <TextureButton onClick={openPanel}>Get Early Access</TextureButton>
           </div>
         </div>
 
@@ -1036,7 +936,7 @@ export default function LandingPage() {
 
       {/* STICKY BAR (phones and tablets only, after the menu grid scrolls away) */}
       <AnimatePresence>
-        {pastMenu && (
+        {scrolled && (
           <motion.div
             key="mbar"
             className="lp-mbar"

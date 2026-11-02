@@ -45,19 +45,19 @@ They are set in Vercel for Production and Preview.
 
 ## Landing page build notes
 
-- Page order: hero (GGL / Global Golf League / tagline over video), sticky nav menu, hero copy, Join the Waitlist (navy section with perks and a Get Early Access button), What You Can Look Forward To (Hole-in-One Challenge, New Era Tournament, GGL App), Why GGL, FAQs, CTA, footer
-- The Get Early Access button morphs into a full-screen view that shows only the form
+- Page order: hero (GGL / Global Golf League / tagline over video, no top header), button grid under the hero on phones and tablets, hero copy, Join the Waitlist (navy section with perks and a Get Early Access button), What You Can Look Forward To (Hole-in-One Challenge, New Era Tournament, GGL App), Why GGL, FAQs, CTA, footer
+- The menu bar (full row on desktop, slim bar with GGL, Join and a Menu dropdown on phones and tablets) slides in from the top as soon as the visitor scrolls. Phones and tablets also keep the button grid under the hero.
+- The side panel opens from the Sign Up menu item, the Join button in the phone bar, the Get Early Access button in the Join section and the Join the Waitlist button in the bottom CTA.
 - Hole-In-One Details, Tournament Details, App Features and Prize T's & C's fold open and closed on phones (600px and under) and are always open on bigger screens
 - The benefits table has been removed
 - Division prize cards stack on scroll using position: sticky. .lp-section-white must use overflow: clip, not overflow: hidden, or the stacking stops working
 - TiltCard (tilt and glare on the prize cards), GlowCard (gold glow border on Why GGL) and RevealImage (left-to-right wipe reveal on section images) are hand-built with motion. They switch off on touch screens and with reduced motion
-- Animations use `motion/react`, which is already installed. The text animation, side panel, expandable screen and texture buttons were rebuilt by hand. Do not install shadcn, Tailwind or component registries.
-- Overlays (side panel, expandable screen) render through `createPortal` to `document.body`. A transform or filter on an ancestor breaks `position: fixed`, which caused bugs before.
-- The waitlist form exists in two places (side panel and expandable screen) and shares one state in `LandingPage`
+- Animations use `motion/react`, which is already installed. The text animation, side panel and texture buttons were rebuilt by hand. Do not install shadcn, Tailwind or component registries.
+- The side panel renders through `createPortal` to `document.body`. A transform or filter on an ancestor breaks `position: fixed`, which caused bugs before.
+- The waitlist form lives only in the side panel. Its state is held in `LandingPage`
 - Mobile: inputs must be at least 16px to stop iOS zooming, and there must be no horizontal scroll
-- Phones and tablets (900px and under) hide the desktop nav and show a 2-column menu grid under the hero, then a slim fixed bar (GGL, Join, Menu dropdown) once the grid scrolls away
+- Phones and tablets (900px and under) hide the desktop nav and show a 2-column menu grid under the hero, plus the slim fixed bar once the visitor scrolls
 - Never animate height: 'auto' with motion on this page. Motion restores the scroll position when it measures auto height, which cancels menu jumps
-- The side tab (fixed "Join the Waitlist" edge tab, a bottom bar on phones) was removed at the client's request. The header button, menus and bottom CTA still open the side panel.
 
 ## Integrations
 
