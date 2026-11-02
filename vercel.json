@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    { "source": "/", "destination": "/GGL", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/GGL", "destination": "/index.html" },
+    { "source": "/GGL/", "destination": "/index.html" }
+  ]
+}

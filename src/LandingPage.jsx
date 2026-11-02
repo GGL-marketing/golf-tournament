@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, Fragment } from 'react'
 import { createPortal } from 'react-dom'
-import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
+import { motion, AnimatePresence, useInView, useReducedMotion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from 'motion/react'
 import heroVideo from './assets/hero-video.mp4'
 import gglLogo from './assets/GGL_LOGO.png'
 import ladyGolferImage from './assets/lady-golfer.webp'
@@ -16,11 +16,11 @@ const REGIONS = ['Johannesburg', 'Cape Town', 'KwaZulu-Natal', 'Other']
 
 const NAV = [
   { id: 'top', label: 'GGL' },
-  { id: 'join', label: 'Join / Sign Up' },
+  { id: 'join', label: 'Sign Up' },
   { id: 'challenge', label: 'Hole-In-One Challenge' },
   { id: 'tournament', label: 'New Era Tournament' },
-  { id: 'app', label: 'App' },
-  { id: 'why', label: 'Why We Care' },
+  { id: 'app', label: 'GGL Mobile App' },
+  { id: 'why', label: 'Why GGL' },
   { id: 'faq', label: "FAQ's" },
 ]
 
@@ -28,7 +28,6 @@ const BENEFITS = [
   { benefit: 'GGL App Access', general: 'Standard download', vip: '3-month free trial included' },
   { benefit: 'New Era Tournament Entries', general: 'Public registration (subject to caps)', vip: '48-hour priority window (153 cap)' },
   { benefit: 'R100k Hole-in-One Booking', general: 'Standby queue', vip: 'Guaranteed early notification' },
-  { benefit: 'Launch Updates & Fixtures', general: 'Public social media', vip: 'Direct WhatsApp & email alerts' },
 ]
 
 const PRIZES = [
@@ -156,7 +155,7 @@ const FAQS = [
   },
   {
     q: 'How will I be notified when features go live?',
-    a: 'You will receive an email and a WhatsApp message as each one opens, before it is announced to the general public. From there you can download the app and activate your 3-month trial, or reserve your tournament entry.',
+    a: "If you sign up, you'll receive an email as each one opens, before it is announced to the general public. From there you can download the app and activate your 3-month trial, or reserve your tournament entry. If you don't sign up, you can follow us on social media for updates, but you'll miss out on early releases and Premium Access benefits.",
   },
   {
     q: 'What does it cost to enter the New Era Tournament?',
@@ -258,6 +257,123 @@ function BlurReveal({ as = 'div', className = '', delay = 0, children }) {
   )
 }
 
+/* True on devices with a mouse or trackpad (not touch screens) */
+function useFinePointer() {
+  const [fine, setFine] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    setFine(mq.matches)
+    const onChange = (e) => setFine(e.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+  return fine
+}
+
+/* Tilts toward the cursor with a soft glare. Flat on touch screens and with reduced motion. */
+function TiltCard({ className = '', max = 7, children }) {
+  const reduceMotion = useReducedMotion()
+  const fine = useFinePointer()
+  const active = fine && !reduceMotion
+
+  const px = useMotionValue(0.5)
+  const py = useMotionValue(0.5)
+  const spring = { stiffness: 220, damping: 22 }
+  const rotateX = useSpring(useTransform(py, [0, 1], [max, -max]), spring)
+  const rotateY = useSpring(useTransform(px, [0, 1], [-max, max]), spring)
+  const glareX = useTransform(px, (v) => `${v * 100}%`)
+  const glareY = useTransform(py, (v) => `${v * 100}%`)
+  const glare = useMotionTemplate`radial-gradient(circle at ${glareX} ${glareY}, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 55%)`
+  const glareOpacity = useSpring(0, { stiffness: 200, damping: 25 })
+
+  const handleMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    px.set((e.clientX - r.left) / r.width)
+    py.set((e.clientY - r.top) / r.height)
+    glareOpacity.set(1)
+  }
+
+  const handleLeave = () => {
+    px.set(0.5)
+    py.set(0.5)
+    glareOpacity.set(0)
+  }
+
+  return (
+    <motion.div
+      className={`lp-tilt ${className}`}
+      style={active ? { rotateX, rotateY, transformPerspective: 900 } : undefined}
+      onPointerMove={active ? handleMove : undefined}
+      onPointerLeave={active ? handleLeave : undefined}
+    >
+      {children}
+      {active && <motion.div className="lp-tilt-glare" aria-hidden="true" style={{ background: glare, opacity: glareOpacity }} />}
+    </motion.div>
+  )
+}
+
+/* Card with a gold border that glows where the cursor is */
+function GlowCard({ className = '', children }) {
+  const ref = useRef(null)
+  const reduceMotion = useReducedMotion()
+  const fine = useFinePointer()
+  const active = fine && !reduceMotion
+
+  const handleMove = (e) => {
+    const el = ref.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    el.style.setProperty('--glow-x', `${e.clientX - r.left}px`)
+    el.style.setProperty('--glow-y', `${e.clientY - r.top}px`)
+    el.style.setProperty('--glow-on', '1')
+  }
+
+  const handleLeave = () => {
+    if (ref.current) ref.current.style.setProperty('--glow-on', '0')
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={`lp-glow-card ${className}`}
+      onPointerMove={active ? handleMove : undefined}
+      onPointerLeave={active ? handleLeave : undefined}
+    >
+      {active && <div className="lp-glow-border" aria-hidden="true" />}
+      {active && <div className="lp-glow-fill" aria-hidden="true" />}
+      <div className="lp-glow-content">{children}</div>
+    </div>
+  )
+}
+
+/* Image that wipes in from left to right as soon as it scrolls into view */
+function RevealImage({ src, alt }) {
+  const ref = useRef(null)
+  const reduceMotion = useReducedMotion()
+  const inView = useInView(ref, { amount: 0.15, once: true })
+  const shown = reduceMotion || inView
+
+  return (
+    <div className="lp-reveal" ref={ref}>
+      <motion.div
+        className="lp-reveal-frame"
+        initial={false}
+        animate={{ clipPath: shown ? 'inset(0% 0% 0% 0% round 14px)' : 'inset(0% 100% 0% 0% round 14px)' }}
+        transition={{ duration: reduceMotion ? 0 : 0.7, ease: EASE }}
+      >
+        <motion.img
+          src={src}
+          alt={alt}
+          className="lp-reveal-img"
+          initial={false}
+          animate={{ scale: shown ? 1 : 1.08 }}
+          transition={{ duration: reduceMotion ? 0 : 0.9, ease: EASE }}
+        />
+      </motion.div>
+    </div>
+  )
+}
+
 function TextureButton({ variant = 'gold', size = 'md', block = false, type = 'button', className = '', children, ...props }) {
   return (
     <button type={type} className={`tx-btn tx-${variant} tx-${size} ${block ? 'tx-block' : ''} ${className}`} {...props}>
@@ -289,15 +405,32 @@ function Swoosh({ id, variant = 'gold', shape = 'loop', className = '' }) {
   )
 }
 
+/* Section that folds open and closed on phones. Always open on bigger screens. */
+function Fold({ title, titleClass = '', children }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className={`lp-fold ${open ? 'is-open' : ''}`}>
+      <button type="button" className={`lp-fold-toggle ${titleClass}`} aria-expanded={open} onClick={() => setOpen(!open)}>
+        <span>{title}</span>
+        <span className="lp-fold-icon" aria-hidden="true">+</span>
+      </button>
+      <div className="lp-fold-body">
+        <div className="lp-fold-inner">{children}</div>
+      </div>
+    </div>
+  )
+}
+
 function Terms({ items }) {
   return (
     <div className="lp-terms">
-      <p className="lp-terms-title">Prize T's & C's</p>
-      <ul>
-        {items.map((t) => (
-          <li key={t.label}><strong>{t.label}:</strong> {t.text}</li>
-        ))}
-      </ul>
+      <Fold title="Prize T's & C's" titleClass="lp-terms-title">
+        <ul>
+          {items.map((t) => (
+            <li key={t.label}><strong>{t.label}:</strong> {t.text}</li>
+          ))}
+        </ul>
+      </Fold>
     </div>
   )
 }
@@ -364,7 +497,7 @@ function WaitlistForm({ idPrefix, form, onChange, consent, onConsent, status, er
             <label className="lp-label" htmlFor={fid('handicap')}>
               Handicap <span className="lp-label-optional">(optional)</span>
             </label>
-            <input id={fid('handicap')} name="handicap" type="number" min="0" max="54" step="0.1" className="lp-input" value={form.handicap} onChange={onChange} placeholder="0 to 54" />
+            <input id={fid('handicap')} name="handicap" type="number" min="0" max="35" step="0.1" className="lp-input" value={form.handicap} onChange={onChange} placeholder="0 to 35" />
           </div>
         </div>
 
@@ -417,33 +550,30 @@ function SidePanel({ open, onClose, children }) {
   )
 }
 
-/* Join card that morphs into a full-screen sign-up view */
-function ExpandableWaitlist({ open, onOpen, onClose, children }) {
+/* Button that morphs into a full-screen sign-up view */
+function ExpandableWaitlist({ open, onOpen, onClose, label, children }) {
   const reduceMotion = useReducedMotion()
   const morph = { duration: reduceMotion ? 0 : 0.5, ease: EASE }
 
   return (
     <>
       <div className="xs-slot">
+        {/* Invisible copy holds the button's space while the real one is expanded */}
+        <span className="tx-btn tx-gold tx-md xs-ghost" aria-hidden="true">
+          <span className="tx-btn-inner">{label}</span>
+        </span>
         <AnimatePresence initial={false}>
           {!open && (
             <motion.button
               key="xs-trigger"
               type="button"
               layoutId="ggl-waitlist"
-              className="xs-trigger"
-              style={{ borderRadius: 28 }}
+              className="tx-btn tx-gold tx-md xs-trigger"
+              style={{ borderRadius: 14 }}
               transition={morph}
               onClick={onOpen}
             >
-              <motion.span layout="position" className="xs-trigger-inner">
-                <span className="xs-trigger-eyebrow">GGL Pre-Membership</span>
-                <span className="xs-trigger-title">Join the Waitlist</span>
-                <span className="xs-trigger-sub">Free to join. Takes under a minute.</span>
-                <span className="tx-btn tx-gold tx-md">
-                  <span className="tx-btn-inner">Get Early Access</span>
-                </span>
-              </motion.span>
+              <span className="tx-btn-inner">{label}</span>
             </motion.button>
           )}
         </AnimatePresence>
@@ -505,12 +635,11 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState(0)
   const [panelOpen, setPanelOpen] = useState(false)
   const [screenOpen, setScreenOpen] = useState(false)
-
-  const overlayOpen = panelOpen || screenOpen
-
   const [pastMenu, setPastMenu] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuGridRef = useRef(null)
+
+  const overlayOpen = panelOpen || screenOpen
 
   // Phones and tablets: show the slim sticky bar once the menu grid has scrolled off screen
   useEffect(() => {
@@ -612,8 +741,8 @@ export default function LandingPage() {
       setError('Please select your region.')
       return
     }
-    if (form.handicap !== '' && (Number(form.handicap) < 0 || Number(form.handicap) > 54)) {
-      setError('Handicap must be between 0 and 54.')
+    if (form.handicap !== '' && (Number(form.handicap) < 0 || Number(form.handicap) > 35)) {
+      setError('Handicap must be between 0 and 35.')
       return
     }
     if (!consent) {
@@ -718,64 +847,34 @@ export default function LandingPage() {
           <BlurReveal as="p" className="lp-hero-body" delay={0.1}>
             Global Golf League is built for the golfers who want more. We are here to give it to you!
           </BlurReveal>
-          <BlurReveal as="p" className="lp-hero-mission" delay={0.2}>
-            We've created a competitive golf league experience where amateur golfers of all ages and gender can enjoy the game they love, and feel that their game matters.
-          </BlurReveal>
         </div>
 
         <Swoosh variant="navy" shape="wave" className="lp-swoosh lp-swoosh-hero" />
       </section>
 
       {/* JOIN THE WAITLIST */}
-      <section id="join" className="lp-section-white lp-anchor">
-        <div className="lp-title-band">
-          <TextAnimate as="p" text="We are getting warmed up." className="lp-band-eyebrow" />
-          <div className="lp-title-box">
-            <TextAnimate as="h2" text="Get Notified When We Go Live" delay={0.2} />
+      <section id="join" className="lp-join lp-anchor">
+        <div className="lp-join-inner">
+          <div className="lp-join-intro">
+            <TextAnimate as="p" text="We are getting warmed up." className="lp-band-eyebrow xs-eyebrow" />
+            <TextAnimate as="h2" text="Join the Waitlist" className="xs-title" delay={0.15} />
+            <BlurReveal as="p" className="xs-lead">
+              Signing up gives you instant launch alerts and priority registration as entries are strictly limited.
+            </BlurReveal>
           </div>
-        </div>
 
-        <div className="lp-container">
-          <div className="lp-signup-grid">
-            <div className="lp-why">
-              <div className="lp-bar"><TextAnimate text="Why join the waitlist today?" /></div>
-              <BlurReveal as="p" className="lp-body lp-body-dark">
-                With capped tournament entries and limited challenge slots, access is handled on a first-come, first-served basis.
-              </BlurReveal>
+          <div className="lp-join-action">
+            <BlurReveal as="ul" className="xs-perks">
+              {BENEFITS.map((row) => (
+                <li key={row.benefit}>
+                  <span className="xs-perk-label">{row.benefit}</span>
+                  <span className="xs-perk-text">{row.vip}</span>
+                </li>
+              ))}
+            </BlurReveal>
 
-              <BlurReveal className="lp-gold-table lp-benefits" delay={0.1}>
-                <div className="lp-gold-row lp-gold-head">
-                  <span>Benefit</span>
-                  <span>General Public</span>
-                  <span>Pre-Launch VIP List</span>
-                </div>
-                {BENEFITS.map((row) => (
-                  <div key={row.benefit} className="lp-gold-row">
-                    <span className="lp-gold-label">{row.benefit}</span>
-                    <span data-label="General Public" className="lp-gold-general">{row.general}</span>
-                    <span data-label="VIP List" className="lp-gold-vip">{row.vip}</span>
-                  </div>
-                ))}
-              </BlurReveal>
-            </div>
-
-            <ExpandableWaitlist open={screenOpen} onOpen={openScreen} onClose={() => setScreenOpen(false)}>
-              <div className="xs-grid">
-                <div className="xs-intro">
-                  <p className="lp-band-eyebrow xs-eyebrow">We are getting warmed up.</p>
-                  <h2 className="xs-title">Join the Waitlist</h2>
-                  <p className="xs-lead">
-                    Sign up for GGL Pre-Membership to receive immediate notifications as our app launches, tournament fixtures open, and challenge dates are announced.
-                  </p>
-                  <ul className="xs-perks">
-                    {BENEFITS.map((row) => (
-                      <li key={row.benefit}>
-                        <span className="xs-perk-label">{row.benefit}</span>
-                        <span className="xs-perk-text">{row.vip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <ExpandableWaitlist label="Get Early Access" open={screenOpen} onOpen={openScreen} onClose={() => setScreenOpen(false)}>
+              <div className="xs-form-wrap">
                 <div className="lp-form-card">
                   <WaitlistForm idPrefix="screen" {...formProps} />
                 </div>
@@ -784,7 +883,6 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <Swoosh id="gold-signup" shape="loop" className="lp-swoosh lp-swoosh-corner-left" />
       </section>
 
       {/* WHAT YOU CAN LOOK FORWARD TO */}
@@ -807,58 +905,65 @@ export default function LandingPage() {
 
               {feature.showPrizes && (
                 <div className="lp-prizes">
-                  <BlurReveal className="lp-prize-grid">
-                    {PRIZES.map((division) => (
-                      <div key={division.name} className="lp-gold-table lp-prize-card">
-                        <div className="lp-prize-head">
-                          <span className="lp-prize-div">{division.name}</span>
-                          <span className="lp-prize-hcp">Handicap {division.handicap}</span>
-                        </div>
-                        <p className="lp-prize-voucher">Prizes are gift vouchers, not exchangeable for cash</p>
-                        <div className="lp-prize-row lp-prize-row-head">
-                          <span>Position</span>
-                          <span>Prize</span>
-                        </div>
-                        {division.rows.map((row) => (
-                          <div key={row.place} className="lp-prize-row">
-                            <span>{row.place}</span>
-                            <span>{row.prize}</span>
+                  <div className="lp-prize-stack">
+                    {PRIZES.map((division, i) => (
+                      <div
+                        key={division.name}
+                        className="lp-prize-slot"
+                        style={{ '--i': i, '--r': ['-1.2deg', '1deg', '-0.6deg'][i % 3] }}
+                      >
+                        <TiltCard className="lp-gold-table lp-prize-card">
+                          <div className="lp-prize-head">
+                            <span className="lp-prize-div">{division.name}</span>
+                            <span className="lp-prize-hcp">Handicap {division.handicap}</span>
                           </div>
-                        ))}
-                        <div className="lp-prize-row lp-prize-total">
-                          <span>Total Prize Pool</span>
-                          <span>{division.total}</span>
-                        </div>
+                          <p className="lp-prize-voucher">Prizes are gift vouchers, not exchangeable for cash</p>
+                          <div className="lp-prize-row lp-prize-row-head">
+                            <span>Position</span>
+                            <span>Prize</span>
+                          </div>
+                          {division.rows.map((row) => (
+                            <div key={row.place} className="lp-prize-row">
+                              <span>{row.place}</span>
+                              <span>{row.prize}</span>
+                            </div>
+                          ))}
+                          <div className="lp-prize-row lp-prize-total">
+                            <span>Total Prize Pool</span>
+                            <span>{division.total}</span>
+                          </div>
+                        </TiltCard>
                       </div>
                     ))}
-                  </BlurReveal>
-                  <BlurReveal>
+                  </div>
+                  <div className="lp-prize-aside">
                     <Terms items={TOURNAMENT_TERMS} />
-                  </BlurReveal>
+                  </div>
                 </div>
               )}
 
               <div className="lp-feature-grid">
                 <div className="lp-feature-content">
-                  {feature.pointsTitle && <h3 className="lp-points-title">{feature.pointsTitle}</h3>}
-                  <BlurReveal as="ul" className="lp-points">
-                    {feature.points.map((point) => (
-                      <li key={point.label}>
-                        <strong>{point.label}:</strong> {point.text}
-                        {point.sub && (
-                          <ul className="lp-subpoints">
-                            {point.sub.map((s) => (
-                              <li key={s.label}><strong>{s.label}:</strong> {s.text}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    ))}
-                  </BlurReveal>
+                  <Fold title={feature.pointsTitle} titleClass="lp-points-title">
+                    <BlurReveal as="ul" className="lp-points">
+                      {feature.points.map((point) => (
+                        <li key={point.label}>
+                          <strong>{point.label}:</strong> {point.text}
+                          {point.sub && (
+                            <ul className="lp-subpoints">
+                              {point.sub.map((s) => (
+                                <li key={s.label}><strong>{s.label}:</strong> {s.text}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      ))}
+                    </BlurReveal>
+                  </Fold>
                 </div>
 
                 <div className="lp-feature-media">
-                  <img src={feature.image} alt={feature.imageAlt} />
+                  <RevealImage src={feature.image} alt={feature.imageAlt} />
                 </div>
               </div>
             </article>
@@ -868,31 +973,33 @@ export default function LandingPage() {
         <Swoosh id="gold-features" shape="wave" className="lp-swoosh lp-swoosh-bottom-full" />
       </section>
 
-      {/* WHY WE CARE */}
+      {/* WHY GGL */}
       <section id="why" className="lp-section-navy lp-anchor">
         <div className="lp-title-band lp-title-band-flush">
           <div className="lp-title-box">
-            <TextAnimate as="h2" text="Why We Care" />
+            <TextAnimate as="h2" text="Why GGL" />
           </div>
         </div>
 
         <div className="lp-container lp-narrow">
-          {WHY_WE_CARE_INTRO.map((p, i) => (
-            <BlurReveal key={i} as="p" className="lp-body lp-body-light">{p}</BlurReveal>
-          ))}
-          <TextAnimate as="p" text="That is where GGL steps in." className="lp-care-strong" />
-          <BlurReveal as="blockquote" className="lp-mission">
-            Our mission is simple: to create a competitive golf league experience where amateur golfers of all ages and genders can enjoy the game they love, and feel that their game matters.
-          </BlurReveal>
-          {WHY_WE_CARE_OUTRO.map((p, i) => (
-            <BlurReveal key={i} as="p" className="lp-body lp-body-light">{p}</BlurReveal>
-          ))}
+          <GlowCard>
+            {WHY_WE_CARE_INTRO.map((p, i) => (
+              <BlurReveal key={i} as="p" className="lp-body lp-body-light">{p}</BlurReveal>
+            ))}
+            <TextAnimate as="p" text="That is where GGL steps in." className="lp-care-strong" />
+            <BlurReveal as="blockquote" className="lp-mission">
+              Our mission is simple: to create a competitive golf league experience where amateur golfers of all ages and genders can enjoy the game they love, and feel that their game matters.
+            </BlurReveal>
+            {WHY_WE_CARE_OUTRO.map((p, i) => (
+              <BlurReveal key={i} as="p" className="lp-body lp-body-light">{p}</BlurReveal>
+            ))}
+          </GlowCard>
         </div>
       </section>
 
       {/* FAQS */}
       <section id="faq" className="lp-section-white lp-anchor">
-        <div className="lp-title-band">
+        <div className="lp-title-band lp-title-band-light">
           <div className="lp-title-box">
             <TextAnimate as="h2" text="FAQs" />
           </div>
@@ -913,7 +1020,6 @@ export default function LandingPage() {
 
       {/* CTA */}
       <section className="lp-cta">
-        <TextAnimate as="h2" text="Get Notified When We Go Live" className="lp-cta-title" />
         <TextureButton size="lg" onClick={openPanel}>Join the Waitlist</TextureButton>
       </section>
 
@@ -973,22 +1079,6 @@ export default function LandingPage() {
                 </motion.ul>
               )}
             </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* EDGE TAB (opens the side panel) */}
-      <AnimatePresence>
-        {!overlayOpen && (
-          <motion.div
-            key="sp-tab"
-            className="sp-tab"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            <TextureButton onClick={openPanel}>Join the Waitlist</TextureButton>
           </motion.div>
         )}
       </AnimatePresence>
