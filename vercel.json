@@ -4,6 +4,8 @@
   ],
   "rewrites": [
     { "source": "/GGL", "destination": "/index.html" },
-    { "source": "/GGL/", "destination": "/index.html" }
+    { "source": "/GGL/", "destination": "/index.html" },
+    { "source": "/ggl", "destination": "/index.html" },
+    { "source": "/ggl/", "destination": "/index.html" }
   ]
 }
